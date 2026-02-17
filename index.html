@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Semma Digital - Gestão de Licenças</title>
+    <title>Semma Digital - Conceição do Araguaia</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
@@ -32,10 +32,7 @@
     <div class="row justify-content-center mt-3 text-start">
         <div class="col-md-10">
             <div class="card card-custom p-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="fw-bold mb-0">CONSULTAR LICENÇAS</h4>
-                    <button onclick="window.print()" class="btn btn-outline-secondary btn-sm d-none-print"><i class="bi bi-printer"></i> Imprimir</button>
-                </div>
+                <h4 class="fw-bold mb-3 text-center">CONSULTAR LICENÇAS</h4>
                 <div class="input-group mb-4">
                     <input type="text" id="cnpjBusca" class="form-control form-control-lg" placeholder="Digite o CNPJ">
                     <button onclick="consultar()" class="btn btn-success btn-lg px-4">BUSCAR</button>
@@ -48,7 +45,7 @@
                     <div id="resObservacoes" class="alert alert-warning py-2 small d-none"></div>
                     <table class="table align-middle mt-3">
                         <thead class="table-dark">
-                            <tr><th>Licença</th><th>Vencimento</th><th>Status</th><th class="text-center d-none-print">Notificar</th></tr>
+                            <tr><th>Licença</th><th>Vencimento</th><th>Status</th><th class="text-center">Ação</th></tr>
                         </thead>
                         <tbody id="resTabela"></tbody>
                     </table>
@@ -65,7 +62,7 @@
 
     <div class="row justify-content-center painel-admin">
         <div class="col-md-10 text-start">
-            <div class="card card-custom p-4 bg-white">
+            <div class="card card-custom p-4 bg-white shadow-sm">
                 <div class="d-flex justify-content-between mb-4">
                     <h4 class="fw-bold text-danger">PAINEL ADMINISTRADOR</h4>
                     <div>
@@ -88,12 +85,12 @@
 
                 <h6 class="fw-bold text-muted border-bottom mt-4 pb-2">Registros Cadastrados</h6>
                 <div class="table-responsive">
-                    <table class="table table-sm mt-2 small">
+                    <table class="table table-sm mt-2 small align-middle">
                         <thead class="table-light">
                             <tr>
                                 <th>Empresa</th>
                                 <th>Licença</th>
-                                <th>Cadastrado em</th>
+                                <th>Data Cadastro</th>
                                 <th>Vencimento</th>
                                 <th class="text-center">Ação</th>
                             </tr>
@@ -121,15 +118,18 @@
                 const diff = Math.floor((dv - hoje) / 86400000);
                 if(diff < 0) totalVencidas++; else if(diff <= 60) totalAlerta++;
 
-                const dataCad = lic.dataCadastro ? new Date(lic.dataCadastro).toLocaleDateString('pt-BR') : '---';
-                const dataVenc = dv.toLocaleDateString('pt-BR');
+                // Formatação das datas para a tabela
+                const dataCadFormatada = lic.dataCadastro ? new Date(lic.dataCadastro).toLocaleDateString('pt-BR') : "---";
+                const dataVencFormatada = dv.toLocaleDateString('pt-BR');
 
                 corpoGerenciar.innerHTML += `<tr>
-                    <td class="text-truncate" style="max-width: 120px;">${emp.empresa}</td>
+                    <td class="text-truncate" style="max-width: 150px;">${emp.empresa}</td>
                     <td>${lic.tipo}</td>
-                    <td class="text-muted">${dataCad}</td>
-                    <td class="fw-bold text-primary">${dataVenc}</td>
-                    <td class="text-center"><button onclick="excluir(${empIdx}, ${licIdx})" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button></td>
+                    <td class="text-muted">${dataCadFormatada}</td>
+                    <td class="fw-bold text-primary">${dataVencFormatada}</td>
+                    <td class="text-center">
+                        <button onclick="excluir(${empIdx}, ${licIdx})" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
+                    </td>
                 </tr>`;
             });
         });
@@ -140,28 +140,35 @@
     }
 
     function salvar() {
-        const d = {
-            cnpj: document.getElementById('cadCnpj').value.replace(/\D/g, ''),
-            nome: document.getElementById('cadNome').value.trim().toUpperCase(),
-            cel: document.getElementById('cadCelular').value.replace(/\D/g, ''),
-            mail: document.getElementById('cadEmail').value.trim(),
-            ln: document.getElementById('licNome').value.trim(),
-            ld: document.getElementById('licData').value,
-            obs: document.getElementById('cadObs').value.trim(),
-            hoje: new Date().toISOString() // Grava o momento do cadastro
-        };
-        if(!d.cnpj || !d.nome || !d.cel || !d.mail || !d.ln || !d.ld) return alert("Preencha os campos obrigatórios!");
+        const cnpj = document.getElementById('cadCnpj').value.replace(/\D/g, '');
+        const nome = document.getElementById('cadNome').value.trim().toUpperCase();
+        const cel = document.getElementById('cadCelular').value.replace(/\D/g, '');
+        const mail = document.getElementById('cadEmail').value.trim();
+        const lNome = document.getElementById('licNome').value.trim();
+        const lData = document.getElementById('licData').value;
+        const obs = document.getElementById('cadObs').value.trim();
 
-        let ex = bancoLicencas.find(e => e.cnpj === d.cnpj);
+        if(!cnpj || !nome || !cel || !mail || !lNome || !lData) return alert("Preencha todos os campos obrigatórios!");
+
+        const dataAgora = new Date().toISOString();
+
+        let ex = bancoLicencas.find(e => e.cnpj === cnpj);
         if(ex) {
-            ex.licencas.push({ tipo: d.ln, vencimento: d.ld, dataCadastro: d.hoje });
-            ex.empresa = d.nome; ex.celular = d.cel; ex.email = d.mail; ex.observacoes = d.obs;
+            ex.licencas.push({ tipo: lNome, vencimento: lData, dataCadastro: dataAgora });
+            ex.empresa = nome; ex.celular = cel; ex.email = mail; ex.observacoes = obs;
         } else {
-            bancoLicencas.push({ cnpj: d.cnpj, empresa: d.nome, celular: d.cel, email: d.mail, observacoes: d.obs, licencas: [{ tipo: d.ln, vencimento: d.ld, dataCadastro: d.hoje }] });
+            bancoLicencas.push({ 
+                cnpj: cnpj, 
+                empresa: nome, 
+                celular: cel, 
+                email: mail, 
+                observacoes: obs, 
+                licencas: [{ tipo: lNome, vencimento: lData, dataCadastro: dataAgora }] 
+            });
         }
         localStorage.setItem('bancoSemma', JSON.stringify(bancoLicencas));
         atualizarInterface();
-        alert("✅ Salvo com sucesso!");
+        alert("✅ Registro Salvo!");
     }
 
     function consultar() {
@@ -190,7 +197,9 @@
                 <td>${l.tipo}</td>
                 <td>${dv.toLocaleDateString('pt-BR')}</td>
                 <td><span class="${cor}">${txt}</span></td>
-                <td class="text-center"><button onclick="zap('${e.empresa}','${l.tipo}','${dv.toLocaleDateString('pt-BR')}','${e.celular}')" class="btn btn-success btn-sm">Notificar</button></td>
+                <td class="text-center">
+                    <button onclick="zap('${e.empresa}','${l.tipo}','${dv.toLocaleDateString('pt-BR')}','${e.celular}')" class="btn btn-success btn-sm">Notificar</button>
+                </td>
             </tr>`;
         });
     }
@@ -202,7 +211,7 @@
     }
 
     function excluir(eI, lI) {
-        if(confirm("Deseja realmente excluir este registro?")) {
+        if(confirm("Excluir este registro?")) {
             bancoLicencas[eI].licencas.splice(lI, 1);
             if(bancoLicencas[eI].licencas.length === 0) bancoLicencas.splice(eI, 1);
             localStorage.setItem('bancoSemma', JSON.stringify(bancoLicencas));
@@ -217,7 +226,12 @@
 
     function importarBackup(event) {
         const reader = new FileReader();
-        reader.onload = e => { bancoLicencas = JSON.parse(e.target.result); localStorage.setItem('bancoSemma', JSON.stringify(bancoLicencas)); atualizarInterface(); alert("Restaurado!"); };
+        reader.onload = e => { 
+            bancoLicencas = JSON.parse(e.target.result); 
+            localStorage.setItem('bancoSemma', JSON.stringify(bancoLicencas)); 
+            atualizarInterface(); 
+            alert("Restauração Concluída!"); 
+        };
         reader.readAsText(event.target.files[0]);
     }
 
