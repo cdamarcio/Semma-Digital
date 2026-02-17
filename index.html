@@ -3,130 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Semma Digital - Consulta por CNPJ</title>
+    <title>Semma Digital - Sistema de Gestão</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
         body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; }
         .card-custom { border-top: 6px solid #198754; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .brand-cda { color: #198754; font-weight: bold; }
-        /* Cores de Status Solicitadas */
-        .status-vigente { background-color: #198754 !important; color: white !important; } /* Verde */
-        .status-renovacao { background-color: #fd7e14 !important; color: white !important; } /* Laranja */
-        .status-vencido { background-color: #dc3545 !important; color: white !important; } /* Vermelho */
-        .badge-status { padding: 10px; border-radius: 5px; display: inline-block; width: 120px; text-align: center; font-weight: bold; }
+        .status-vigente { background-color: #198754 !important; color: white !important; }
+        .status-renovacao { background-color: #fd7e14 !important; color: white !important; }
+        .status-vencido { background-color: #dc3545 !important; color: white !important; }
+        .badge-status { padding: 10px; border-radius: 5px; font-weight: bold; min-width: 110px; display: inline-block; text-align: center; }
+        .nav-pills .nav-link.active { background-color: #198754; }
+        .nav-link { color: #198754; font-weight: bold; }
     </style>
 </head>
 <body>
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-9 text-center">
-            <h2 class="brand-cda">SEMMA DIGITAL</h2>
-            <p class="text-muted">Conceição do Araguaia - PA</p>
-            
-            <div class="card card-custom text-start mb-4">
-                <div class="card-body p-4">
-                    <h5 class="card-title mb-4 fw-bold">Consultar Licenças por CNPJ</h5>
-                    <div class="input-group mb-3">
-                        <input type="text" id="cnpjBusca" class="form-control form-control-lg" placeholder="Digite o CNPJ (somente números)">
-                        <button onclick="consultarCNPJ()" class="btn btn-success btn-lg">Consultar</button>
-                    </div>
-                    
-                    <div id="resultadoBusca" class="mt-4 d-none">
-                        <h6 class="fw-bold mb-3">Empresa: <span id="nomeEmpresa" class="text-success"></span></h6>
-                        <div class="table-responsive">
-                            <table class="table align-middle">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Licença</th>
-                                        <th>Vencimento</th>
-                                        <th>Prazo</th>
-                                        <th class="text-center">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tabelaCorpo"></tbody>
-                            </table>
+<div class="container py-4">
+    <div class="text-center mb-4">
+        <h2 class="brand-cda">SEMMA DIGITAL</h2>
+        <p class="text-muted small">Conceição do Araguaia - PA</p>
+        
+        <ul class="nav nav-pills justify-content-center mb-4" id="pills-tab" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" id="tab-consulta" data-bs-toggle="pill" data-bs-target="#view-consulta">CONSULTAR</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="tab-admin" data-bs-toggle="pill" data-bs-target="#view-admin">GERADOR DE DADOS</button>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="view-consulta">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card card-custom p-4">
+                        <h5 class="fw-bold mb-3">Consultar Empresa (CNPJ)</h5>
+                        <div class="input-group">
+                            <input type="text" id="cnpjBusca" class="form-control form-control-lg" placeholder="Digite o CNPJ (somente números)">
+                            <button onclick="consultar()" class="btn btn-success btn-lg">Buscar</button>
+                        </div>
+                        <div id="resultadoBusca" class="mt-4 d-none">
+                            <h6 class="fw-bold">Empresa: <span id="resNome" class="text-success text-uppercase"></span></h6>
+                            <div class="table-responsive">
+                                <table class="table align-middle mt-3">
+                                    <thead class="table-dark"><tr><th>Licença</th><th>Vencimento</th><th>Dias</th><th class="text-center">Status</th></tr></thead>
+                                    <tbody id="resTabela"></tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                    <div id="erroBusca" class="alert alert-danger mt-3 d-none">CNPJ não encontrado.</div>
                 </div>
             </div>
+        </div>
 
-            <footer class="mt-5 text-muted small">
-                Desenvolvido por: <strong>Márcio Rodrigues de Oliveira</strong> <br>
-                <a href="https://www.kmprojetos.eng.br/" target="_blank" style="text-decoration: none !important;">
-                    <h2 class="fw-bold text-success" style="cursor: pointer; text-decoration: none !important; border: none !important;">www.kmprojetos.eng.br</h2>
-                </a>
-                &copy; 2026 KM PROJETOS DE TECNOLOGIA
-            </footer>
+        <div class="tab-pane fade" id="view-admin">
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="card card-custom p-3 shadow-sm mb-3">
+                        <h6 class="fw-bold mb-3">Cadastrar Nova Licença</h6>
+                        <div class="mb-2"><label class="small fw-bold">CNPJ:</label><input type="text" id="cadCnpj" class="form-control" placeholder="12345678000199"></div>
+                        <div class="mb-2"><label class="small fw-bold">Empresa:</label><input type="text" id="cadNome" class="form-control" placeholder="Nome da Empresa"></div>
+                        <div class="mb-2"><label class="small fw-bold">Tipo de Licença:</label><input type="text" id="licNome" class="form-control" placeholder="Ex: LO - Operação"></div>
+                        <div class="mb-3"><label class="small fw-bold">Data de Vencimento:</label><input type="date" id="licData" class="form-control"></div>
+                        <button onclick="adicionarAoBanco()" class="btn btn-success w-100 fw-bold">ADICIONAR À LISTA</button>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="card p-3 shadow-sm">
+                        <h6 class="fw-bold text-danger">Código Gerado (Copie e cole no Script abaixo)</h6>
+                        <textarea id="codigoGerado" class="form-control mb-3" rows="10" readonly style="font-family: monospace; font-size: 12px;"></textarea>
+                        <p class="small text-muted">Abaixo, as empresas que você já adicionou nesta sessão:</p>
+                        <ul id="listaTemp" class="list-group small"></ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <footer class="mt-5 text-center text-muted small">
+        Desenvolvido por: <strong>Márcio Rodrigues de Oliveira</strong> <br>
+        <a href="https://www.kmprojetos.eng.br/" target="_blank" style="text-decoration: none !important;">
+            <h2 class="fw-bold text-success" style="cursor: pointer; text-decoration: none !important;">www.kmprojetos.eng.br</h2>
+        </a>
+        &copy; 2026 KM PROJETOS DE TECNOLOGIA
+    </footer>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    /* -------------------------------------------------------------------------- */
+    /* DADOS DAS EMPRESAS (COPIE O CÓDIGO GERADO E COLE AQUI)                   */
+    /* -------------------------------------------------------------------------- */
     const bancoLicencas = [
         {
-            cnpj: "12345678000199",
-            empresa: "CONSTRUTORA ARAGUAIA LTDA",
-            licencas: [
-                { tipo: "LO - Operação", vencimento: "2027-01-01" }, // Verde (Vigente)
-                { tipo: "LI - Instalação", vencimento: "2026-05-15" }, // Laranja (Renovação - menos de 120 dias)
-                { tipo: "LP - Prévia", vencimento: "2025-01-01" }     // Vermelho (Vencido)
+            "cnpj": "12345678000199",
+            "empresa": "CONSTRUTORA ARAGUAIA LTDA",
+            "licencas": [
+                { "tipo": "LO - Operação", "vencimento": "2027-01-01" },
+                { "tipo": "LI - Instalação", "vencimento": "2026-05-20" }
             ]
         }
     ];
+    /* -------------------------------------------------------------------------- */
 
-    function consultarCNPJ() {
-        const cnpjInput = document.getElementById('cnpjBusca').value.replace(/\D/g, '');
-        const resultadoDiv = document.getElementById('resultadoBusca');
-        const erroDiv = document.getElementById('erroBusca');
-        const tabela = document.getElementById('tabelaCorpo');
-        const nomeEmpresa = document.getElementById('nomeEmpresa');
-
-        const empresaEncontrada = bancoLicencas.find(e => e.cnpj === cnpjInput);
-
-        if (empresaEncontrada) {
-            erroDiv.classList.add('d-none');
-            resultadoDiv.classList.remove('d-none');
-            nomeEmpresa.innerText = empresaEncontrada.empresa;
-            tabela.innerHTML = "";
-
+    function consultar() {
+        const cnpj = document.getElementById('cnpjBusca').value.replace(/\D/g, '');
+        const empresa = bancoLicencas.find(e => e.cnpj === cnpj);
+        const resTabela = document.getElementById('resTabela');
+        
+        if(empresa) {
+            document.getElementById('resultadoBusca').classList.remove('d-none');
+            document.getElementById('resNome').innerText = empresa.empresa;
+            resTabela.innerHTML = "";
             const hoje = new Date();
             hoje.setHours(0,0,0,0);
 
-            empresaEncontrada.licencas.forEach(lic => {
-                const dataVenc = new Date(lic.vencimento + 'T00:00:00');
-                const diffTime = dataVenc - hoje;
-                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            empresa.licencas.forEach(lic => {
+                const dv = new Date(lic.vencimento + 'T00:00:00');
+                const diff = Math.floor((dv - hoje) / (1000*60*60*24));
+                let cor = diff < 0 ? "status-vencido" : (diff <= 120 ? "status-renovacao" : "status-vigente");
+                let txt = diff < 0 ? "Vencido" : (diff <= 120 ? "Renovação" : "Vigente");
                 
-                let statusClass = "";
-                let statusTxt = "";
-
-                if (diffDays < 0) {
-                    statusClass = "status-vencido";
-                    statusTxt = "Vencido";
-                } else if (diffDays <= 120) {
-                    statusClass = "status-renovacao";
-                    statusTxt = "Renovação";
-                } else {
-                    statusClass = "status-vigente";
-                    statusTxt = "Vigente";
-                }
-
-                tabela.innerHTML += `
-                    <tr>
-                        <td class="fw-bold">${lic.tipo}</td>
-                        <td>${dataVenc.toLocaleDateString('pt-BR')}</td>
-                        <td>${diffDays} dias</td>
-                        <td class="text-center"><span class="badge-status ${statusClass}">${statusTxt}</span></td>
-                    </tr>
-                `;
+                resTabela.innerHTML += `<tr><td class="fw-bold">${lic.tipo}</td><td>${dv.toLocaleDateString('pt-BR')}</td><td>${diff}d</td><td class="text-center"><span class="badge-status ${cor}">${txt}</span></td></tr>`;
             });
-        } else {
-            resultadoDiv.classList.add('d-none');
-            erroDiv.classList.remove('d-none');
-        }
+        } else { alert("CNPJ não encontrado na base de dados."); }
     }
+
+    // LÓGICA DO GERADOR (FRONTEND)
+    let bancoTemporario = [...bancoLicencas];
+
+    function adicionarAoBanco() {
+        const cnpj = document.getElementById('cadCnpj').value.replace(/\D/g, '');
+        const nome = document.getElementById('cadNome').value.toUpperCase();
+        const lNome = document.getElementById('licNome').value;
+        const lData = document.getElementById('licData').value;
+
+        if(!cnpj || !nome || !lData) return alert("Preencha todos os campos!");
+
+        let empExistente = bancoTemporario.find(e => e.cnpj === cnpj);
+        if(empExistente) {
+            empExistente.licencas.push({ tipo: lNome, vencimento: lData });
+        } else {
+            bancoTemporario.push({ cnpj: cnpj, empresa: nome, licencas: [{ tipo: lNome, vencimento: lData }] });
+        }
+
+        document.getElementById('codigoGerado').value = JSON.stringify(bancoTemporario, null, 4);
+        atualizarListaAdmin();
+        alert("Adicionado! O código no campo ao lado foi atualizado.");
+    }
+
+    function atualizarListaAdmin() {
+        const lista = document.getElementById('listaTemp');
+        lista.innerHTML = bancoTemporario.map(e => `<li class="list-group-item">${e.cnpj} - ${e.empresa} (${e.licencas.length} licença(s))</li>`).join('');
+    }
+    
+    // Inicia o campo de código com os dados atuais
+    document.getElementById('codigoGerado').value = JSON.stringify(bancoLicencas, null, 4);
 </script>
 </body>
 </html>
