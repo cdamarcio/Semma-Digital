@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -6,9 +6,9 @@
     <title>Semma Digital - Conceição do Araguaia</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        .card-calc { border-top: 8px solid #198754; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .brand-cda { color: #198754; font-weight: 800; letter-spacing: 1px; }
+        body { background-color: #f4f7f6; }
+        .card-calc { border-top: 6px solid #198754; border-radius: 12px; }
+        .brand-cda { color: #198754; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -16,30 +16,29 @@
     <div class="row justify-content-center">
         <div class="col-md-6 text-center">
             <h2 class="brand-cda">SEMMA DIGITAL</h2>
-            <p class="text-muted mb-4">Conceição do Araguaia - PA</p>
-            <div class="card card-calc text-start">
+            <p class="text-muted">Conceição do Araguaia - PA</p>
+            <div class="card shadow card-calc text-start">
                 <div class="card-body p-4">
-                    <h5 class="card-title mb-4 fw-bold text-center">Calculadora de Vencimentos</h5>
+                    <h5 class="card-title mb-4 fw-bold">Calculadora de Vencimentos</h5>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Data de Emissão:</label>
-                        <input type="date" id="dataEmissao" class="form-control form-control-lg">
+                        <label class="form-label">Data de Emissão:</label>
+                        <input type="date" id="dataEmissao" class="form-control">
                     </div>
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">Tipo de Licença:</label>
-                        <select id="tipoLicenca" class="form-select form-select-lg">
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Licença:</label>
+                        <select id="tipoLicenca" class="form-select">
                             <option value="1">Licença Prévia (LP) - 1 ano</option>
                             <option value="2">Licença de Instalação (LI) - 2 anos</option>
                             <option value="4">Licença de Operação (LO) - 4 anos</option>
                         </select>
                     </div>
-                    <button onclick="calcularPrazo()" class="btn btn-success btn-lg w-100 fw-bold">Calcular Vencimento</button>
+                    <button onclick="calcularPrazo()" class="btn btn-success btn-lg w-100 shadow-sm">Calcular Vencimento</button>
                     <div id="resultado" class="mt-4 d-none">
-                        <div class="alert alert-success border-0 text-center">
-                            <span class="text-muted small uppercase d-block mb-1 text-uppercase">Data de Vencimento</span>
-                            <h2 id="dataVencimento" class="fw-bold mb-3"></h2>
-                            <div class="p-2 bg-white rounded shadow-sm">
-                                <p id="alertaRenovacao" class="mb-0 small fw-bold text-danger"></p>
-                            </div>
+                        <div class="alert alert-success border-0 shadow-sm">
+                            <h4 class="alert-heading fw-bold text-center">Vencimento</h4>
+                            <hr>
+                            <h3 id="dataVencimento" class="text-center fw-bold text-success"></h3>
+                            <p id="alertaRenovacao" class="mb-0 mt-3 small fw-bold text-center"></p>
                         </div>
                     </div>
                 </div>
@@ -55,20 +54,13 @@
     function calcularPrazo() {
         const emissao = document.getElementById('dataEmissao').value;
         const anos = parseInt(document.getElementById('tipoLicenca').value);
-        if (!emissao) { alert("Por favor, selecione a data de emissão."); return; }
-        
-        // Ajuste para evitar erro de fuso horário na data
+        if (!emissao) { alert("Selecione a data de emissão."); return; }
         let data = new Date(emissao + 'T00:00:00');
         data.setFullYear(data.getFullYear() + anos);
-        
-        const dataFormatada = data.toLocaleDateString('pt-BR');
-        
+        document.getElementById('dataVencimento').innerText = data.toLocaleDateString('pt-BR');
         let dataRenovacao = new Date(data);
         dataRenovacao.setDate(dataRenovacao.getDate() - 120);
-        const renovacaoFormatada = dataRenovacao.toLocaleDateString('pt-BR');
-
-        document.getElementById('dataVencimento').innerText = dataFormatada;
-        document.getElementById('alertaRenovacao').innerText = "⚠️ Protocolar renovação até " + renovacaoFormatada + " (Prazo: 120 dias antes).";
+        document.getElementById('alertaRenovacao').innerText = "⚠️ Protocolar renovação até " + dataRenovacao.toLocaleDateString('pt-BR') + " (120 dias antes).";
         document.getElementById('resultado').classList.remove('d-none');
     }
 </script>
