@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Semma Digital - Relatório de Licenças</title>
+    <title>Semma Digital - Gestão de Licenças</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
@@ -19,9 +19,8 @@
         .bg-alerta { background: linear-gradient(45deg, #d35400, #fd7e14); }
         .obrigatorio::after { content: " *"; color: red; }
         
-        /* AJUSTES PARA IMPRESSÃO */
         @media print {
-            .no-print, .btn, .btn-group, .painel-admin, .input-group, hr, #fileInput, .stat-card { display: none !important; }
+            .no-print, .btn, .btn-group, .painel-admin, .input-group, hr, #fileInput, .stat-card, footer { display: none !important; }
             .container { width: 100% !important; max-width: 100% !important; padding: 0 !important; }
             .card-custom { border: none !important; box-shadow: none !important; }
             .table { width: 100% !important; border: 1px solid #dee2e6 !important; }
@@ -30,7 +29,7 @@
     </style>
 </head>
 <body>
-<div class="container pb-5">
+<div class="container pb-5 text-center">
     <div class="brand-cda">
         <h1 class="display-5 fw-bold">SEMMA DIGITAL</h1>
         <p class="lead text-muted">Conceição do Araguaia - PA</p>
@@ -47,7 +46,7 @@
             <div class="card card-custom p-4 shadow">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h4 class="fw-bold mb-0">RELATÓRIO DE CONSULTA</h4>
-                    <button onclick="window.print()" class="btn btn-outline-dark fw-bold no-print"><i class="bi bi-printer"></i> IMPRIMIR RELATÓRIO</button>
+                    <button onclick="window.print()" class="btn btn-outline-dark fw-bold no-print"><i class="bi bi-printer"></i> IMPRIMIR</button>
                 </div>
 
                 <div class="input-group mb-4 no-print">
@@ -55,27 +54,27 @@
                     <button onclick="consultar()" class="btn btn-success btn-lg px-4 fw-bold">BUSCAR</button>
                 </div>
 
-                <div id="resultadoBusca" class="d-none">
-                    <div class="p-3 rounded mb-3 bg-light border-start border-5 border-success text-start">
+                <div id="resultadoBusca" class="d-none text-start">
+                    <div class="p-3 rounded mb-3 bg-light border-start border-5 border-success">
                         <h4 class="fw-bold text-success mb-1" id="resNome"></h4>
                         <p class="mb-0 text-muted" id="resContatos"></p>
                     </div>
-                    <div id="resObs" class="alert alert-warning d-none text-start"></div>
+                    <div id="resObs" class="alert alert-warning d-none"></div>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead class="table-dark">
-                                <tr><th>Licença</th><th>Vencimento</th><th>Situação</th><th class="text-center no-print">Ações</th></tr>
+                                <tr><th>Licença</th><th>Vencimento</th><th>Situação</th><th class="text-center no-print">Ação</th></tr>
                             </thead>
                             <tbody id="resTabela"></tbody>
                         </table>
                     </div>
-                    <p class="small text-muted mt-3">Relatório gerado em: <span id="dataRelatorio"></span></p>
+                    <p class="small text-muted mt-3">Documento gerado eletronicamente em: <span id="dataRelatorio"></span></p>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row justify-content-center mt-5 painel-admin">
+    <div class="row justify-content-center mt-5 painel-admin no-print">
         <div class="col-md-10 text-start">
             <div class="card card-custom p-4 bg-white shadow">
                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -91,14 +90,14 @@
                     <div class="col-md-4 mb-3"><label class="fw-bold small obrigatorio">CNPJ:</label><input type="text" id="cadCnpj" class="form-control"></div>
                     <div class="col-md-8 mb-3"><label class="fw-bold small obrigatorio">Empresa:</label><input type="text" id="cadNome" class="form-control text-uppercase"></div>
                     <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">WhatsApp:</label><input type="text" id="cadCel" class="form-control"></div>
-                    <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">E-mail:</label><input type="email" id="cadMail" class="form-control"></div>
-                    <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">Tipo Licença:</label><input type="text" id="licTipo" class="form-control"></div>
+                    <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">E-mail:</label><input type="email" id="cadEmail" class="form-control"></div>
+                    <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">Licença:</label><input type="text" id="licTipo" class="form-control"></div>
                     <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">Vencimento:</label><input type="date" id="licVenc" class="form-control"></div>
-                    <div class="col-md-8 mb-3"><label class="small fw-bold">Observações:</label><input type="text" id="cadObsInput" class="form-control"></div>
+                    <div class="col-md-8 mb-3"><label class="small fw-bold">Observações Técnicas:</label><input type="text" id="cadObsInput" class="form-control"></div>
                 </div>
                 <button onclick="salvar()" class="btn btn-primary btn-lg w-100 fw-bold">SALVAR CADASTRO</button>
 
-                <h5 class="fw-bold mt-5 border-bottom pb-2">Registros Ativos</h5>
+                <h6 class="fw-bold mt-5 border-bottom pb-2">Registros Cadastrados no Sistema</h6>
                 <div class="table-responsive">
                     <table class="table table-sm table-striped mt-3 align-middle small">
                         <thead><tr><th>Empresa</th><th>Licença</th><th>Cadastro</th><th>Vencimento</th><th class="text-center">Ação</th></tr></thead>
@@ -109,9 +108,12 @@
         </div>
     </div>
 
-    <footer class="mt-5 text-center text-muted no-print pb-5">
-        <h3 class="text-success fw-bold">www.kmprojetos.eng.br</h3>
-        <p>Desenvolvido por: Márcio Rodrigues de Oliveira - 2026</p>
+    <footer class="mt-5 text-muted small no-print">                
+        <a href="https://www.kmprojetos.eng.br/" target="_blank" style="text-decoration: none !important;">
+            <h2 class="fw-bold text-success" style="cursor: pointer; text-decoration: none !important; border: none !important;">www.kmprojetos.eng.br</h2>
+        </a>
+        Desenvolvido por: <strong>Márcio Rodrigues de Oliveira</strong> <br>
+        &copy; 2026 KM Engenharia & Tecnologia
     </footer>
 </div>
 
@@ -134,7 +136,7 @@
                     <td>${e.empresa}</td>
                     <td>${l.tipo}</td>
                     <td>${new Date(l.cad).toLocaleDateString('pt-BR')}</td>
-                    <td class="fw-bold">${new Date(l.venc + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
+                    <td class="fw-bold">${dv.toLocaleDateString('pt-BR')}</td>
                     <td class="text-center"><button onclick="deletar(${ei},${li})" class="btn btn-danger btn-sm">X</button></td>
                 </tr>`;
             });
@@ -148,15 +150,12 @@
         const busca = document.getElementById('cnpjBusca').value.replace(/\D/g, '');
         const e = db.find(x => x.cnpj === busca);
         if(!e) return alert("CNPJ não encontrado!");
-
         document.getElementById('resultadoBusca').classList.remove('d-none');
         document.getElementById('resNome').innerText = e.empresa;
         document.getElementById('resContatos').innerText = `CNPJ: ${e.cnpj} | WhatsApp: ${e.cel} | E-mail: ${e.mail}`;
         document.getElementById('dataRelatorio').innerText = new Date().toLocaleString('pt-BR');
-        
         const obsDiv = document.getElementById('resObs');
         if(e.obs) { obsDiv.innerText = "NOTAS: " + e.obs; obsDiv.classList.remove('d-none'); } else obsDiv.classList.add('d-none');
-
         const t = document.getElementById('resTabela');
         t.innerHTML = "";
         const hoje = new Date(); hoje.setHours(0,0,0,0);
@@ -165,15 +164,7 @@
             const diff = Math.floor((dv - hoje) / 86400000);
             let cor = diff < 0 ? "status-vencido" : (diff <= 60 ? "status-renovacao" : "status-vigente");
             let txt = diff < 0 ? "VENCIDO" : (diff <= 60 ? "RENOVAÇÃO" : "VIGENTE");
-
-            t.innerHTML += `<tr>
-                <td>${l.tipo}</td>
-                <td>${dv.toLocaleDateString('pt-BR')}</td>
-                <td><span class="${cor}">${txt}</span></td>
-                <td class="text-center no-print">
-                    <button onclick="zap('${e.empresa}','${l.tipo}','${dv.toLocaleDateString('pt-BR')}','${e.cel}')" class="btn btn-success btn-sm">WhatsApp</button>
-                </td>
-            </tr>`;
+            t.innerHTML += `<tr><td>${l.tipo}</td><td>${dv.toLocaleDateString('pt-BR')}</td><td><span class="${cor}">${txt}</span></td><td class="text-center no-print"><button onclick="zap('${e.empresa}','${l.tipo}','${dv.toLocaleDateString('pt-BR')}','${e.cel}')" class="btn btn-success btn-sm">Zap</button></td></tr>`;
         });
     }
 
@@ -182,18 +173,18 @@
             cnpj: document.getElementById('cadCnpj').value.replace(/\D/g, ''),
             nome: document.getElementById('cadNome').value.toUpperCase(),
             cel: document.getElementById('cadCel').value.replace(/\D/g, ''),
-            mail: document.getElementById('cadMail').value,
+            mail: document.getElementById('cadEmail').value,
             lt: document.getElementById('licTipo').value,
             lv: document.getElementById('licVenc').value,
             ob: document.getElementById('cadObsInput').value,
-            lc: new Date().toISOString()
+            cad: new Date().toISOString()
         };
         if(!d.cnpj || !d.nome || !d.lv) return alert("Preencha os campos!");
         let emp = db.find(x => x.cnpj === d.cnpj);
-        if(emp) { emp.licencas.push({tipo:d.lt, venc:d.lv, cad:d.lc}); }
-        else { db.push({cnpj:d.cnpj, empresa:d.nome, cel:d.cel, mail:d.mail, obs:d.ob, licencas:[{tipo:d.lt, venc:d.lv, cad:d.lc}]}); }
+        if(emp) { emp.licencas.push({tipo:d.lt, venc:d.lv, cad:d.cad}); }
+        else { db.push({cnpj:d.cnpj, empresa:d.nome, cel:d.cel, mail:d.mail, obs:d.ob, licencas:[{tipo:d.lt, venc:d.lv, cad:d.cad}]}); }
         localStorage.setItem('db_semma', JSON.stringify(db));
-        refresh(); alert("Salvo!");
+        refresh(); alert("✅ Salvo!");
     }
 
     function zap(n, t, d, c) {
