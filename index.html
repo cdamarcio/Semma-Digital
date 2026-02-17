@@ -100,7 +100,16 @@
                 <h6 class="fw-bold mt-5 border-bottom pb-2">Registros Cadastrados no Sistema</h6>
                 <div class="table-responsive">
                     <table class="table table-sm table-striped mt-3 align-middle small">
-                        <thead><tr><th>Empresa</th><th>Licença</th><th>Cadastro</th><th>Vencimento</th><th class="text-center">Ação</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th>Empresa</th>
+                                <th>CNPJ</th>
+                                <th>Licença</th>
+                                <th>Cadastro</th>
+                                <th>Vencimento</th>
+                                <th class="text-center">Ação</th>
+                            </tr>
+                        </thead>
                         <tbody id="listaAdmin"></tbody>
                     </table>
                 </div>
@@ -133,11 +142,12 @@
                 if(diff < 0) v++; else if(diff <= 60) a++;
 
                 adminTbody.innerHTML += `<tr>
-                    <td>${e.empresa}</td>
+                    <td class="text-truncate" style="max-width: 150px;">${e.empresa}</td>
+                    <td>${e.cnpj}</td>
                     <td>${l.tipo}</td>
                     <td>${new Date(l.cad).toLocaleDateString('pt-BR')}</td>
                     <td class="fw-bold">${dv.toLocaleDateString('pt-BR')}</td>
-                    <td class="text-center"><button onclick="deletar(${ei},${li})" class="btn btn-danger btn-sm">X</button></td>
+                    <td class="text-center"><button onclick="deletar(${ei},${li})" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button></td>
                 </tr>`;
             });
         });
@@ -179,12 +189,15 @@
             ob: document.getElementById('cadObsInput').value,
             cad: new Date().toISOString()
         };
-        if(!d.cnpj || !d.nome || !d.lv) return alert("Preencha os campos!");
+        if(!d.cnpj || !d.nome || !d.lv) return alert("Preencha os campos obrigatórios!");
         let emp = db.find(x => x.cnpj === d.cnpj);
-        if(emp) { emp.licencas.push({tipo:d.lt, venc:d.lv, cad:d.cad}); }
+        if(emp) { 
+            emp.licencas.push({tipo:d.lt, venc:d.lv, cad:d.cad}); 
+            emp.empresa = d.nome; emp.cel = d.cel; emp.mail = d.mail; emp.obs = d.ob;
+        }
         else { db.push({cnpj:d.cnpj, empresa:d.nome, cel:d.cel, mail:d.mail, obs:d.ob, licencas:[{tipo:d.lt, venc:d.lv, cad:d.cad}]}); }
         localStorage.setItem('db_semma', JSON.stringify(db));
-        refresh(); alert("✅ Salvo!");
+        refresh(); alert("✅ Registro salvo com sucesso!");
     }
 
     function zap(n, t, d, c) {
@@ -192,13 +205,13 @@
     }
     
     function deletar(ei, li) {
-        if(confirm("Excluir?")) { db[ei].licencas.splice(li, 1); if(db[ei].licencas.length==0)db.splice(ei,1); localStorage.setItem('db_semma', JSON.stringify(db)); refresh(); }
+        if(confirm("Deseja excluir esta licença?")) { db[ei].licencas.splice(li, 1); if(db[ei].licencas.length==0)db.splice(ei,1); localStorage.setItem('db_semma', JSON.stringify(db)); refresh(); }
     }
 
     function exportarBackup() {
         const a = document.createElement('a');
         a.href = URL.createObjectURL(new Blob([JSON.stringify(db)], {type:"application/json"}));
-        a.download = "backup.json"; a.click();
+        a.download = "backup_semma.json"; a.click();
     }
 
     function importarBackup(ev) {
