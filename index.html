@@ -70,7 +70,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h4 class="fw-bold text-danger mb-0">PAINEL ADMINISTRADOR</h4>
                     <div class="btn-group">
-                        <button onclick="povoarBanco()" class="btn btn-primary btn-sm fw-bold">GERAR 100 EMPRESAS</button>
+                        <button onclick="povoarBanco()" class="btn btn-primary btn-sm fw-bold">GERAR 100 TESTES</button>
                         <button onclick="exportarBackup()" class="btn btn-dark btn-sm">Exportar</button>
                         <button onclick="importarBackupClick()" class="btn btn-dark btn-sm">Importar</button>
                         <input type="file" id="fileInput" class="d-none" onchange="importarBackup(event)">
@@ -81,7 +81,18 @@
                     <div class="col-md-8 mb-3"><label class="fw-bold small obrigatorio">Empresa:</label><input type="text" id="cadNome" class="form-control text-uppercase"></div>
                     <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">WhatsApp:</label><input type="text" id="cadCel" class="form-control"></div>
                     <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">E-mail:</label><input type="email" id="cadEmail" class="form-control"></div>
-                    <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">Licença:</label><input type="text" id="licTipo" class="form-control"></div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <label class="small fw-bold obrigatorio">Licença Padrão:</label>
+                        <select id="licTipo" class="form-select">
+                            <option value="LO - Licença de Operação">LO - Operação</option>
+                            <option value="LI - Licença de Instalação">LI - Instalação</option>
+                            <option value="LP - Licença Prévia">LP - Prévia</option>
+                            <option value="Outorga de Uso de Água">Outorga</option>
+                            <option value="Autorização Ambiental">Autorização</option>
+                        </select>
+                    </div>
+
                     <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">Vencimento:</label><input type="date" id="licVenc" class="form-control"></div>
                     <div class="col-md-8 mb-3"><label class="small fw-bold">Observações:</label><input type="text" id="cadObsInput" class="form-control"></div>
                 </div>
@@ -117,7 +128,7 @@
             e.licencas.forEach((l, li) => {
                 const dv = new Date(l.venc + 'T00:00:00');
                 const diff = Math.floor((dv - hoje) / 86400000);
-                if(diff < 0) v++; else if(diff <= 30) a++; // REGRA DE 30 DIAS
+                if(diff < 0) v++; else if(diff <= 30) a++;
                 adminTbody.innerHTML += `<tr><td class="text-truncate" style="max-width:150px">${e.empresa}</td><td>${e.cnpj}</td><td>${l.tipo}</td><td>${new Date(l.cad).toLocaleDateString('pt-BR')}</td><td>${dv.toLocaleDateString('pt-BR')}</td><td class="text-center"><button onclick="deletar(${ei},${li})" class="btn btn-danger btn-sm">X</button></td></tr>`;
             });
         });
@@ -160,21 +171,21 @@
             lv: document.getElementById('licVenc').value,
             cad: new Date().toISOString()
         };
-        if(!d.cnpj || !d.nome || !d.lv) return alert("Preencha os campos obrigatórios!");
+        if(!d.cnpj || !d.nome || !d.lv) return alert("Preencha os campos!");
         let emp = db.find(x => x.cnpj === d.cnpj);
         if(emp) { emp.licencas.push({tipo:d.lt, venc:d.lv, cad:d.cad}); emp.cel=d.cel; emp.mail=d.mail; }
         else { db.push({cnpj:d.cnpj, empresa:d.nome, cel:d.cel, mail:d.mail, licencas:[{tipo:d.lt, venc:d.lv, cad:d.cad}]}); }
         localStorage.setItem('db_semma', JSON.stringify(db));
-        refresh(); alert("✅ Salvo!");
+        refresh(); alert("✅ Registro salvo!");
     }
 
     function povoarBanco() {
         if(!confirm("Gerar 100 empresas de teste?")) return;
-        const tipos = ["LO", "LI", "LP", "Outorga"];
+        const tipos = ["LO - Operação", "LI - Instalação", "LP - Prévia", "Outorga"];
         const nomes = ["Fazenda", "Construtora", "Posto", "Madeireira", "Mineração"];
         const hoje = new Date();
         for(let i=1; i<=100; i++) {
-            const cnpj = (30000000000000 + i).toString();
+            const cnpj = (40000000000000 + i).toString();
             const dV = new Date(); dV.setDate(hoje.getDate() + (Math.floor(Math.random()*150)-30));
             db.push({ cnpj, empresa: nomes[Math.floor(Math.random()*5)]+" "+i, cel: "94991234567", mail: "demo@cda.com", licencas: [{ tipo: tipos[Math.floor(Math.random()*4)], venc: dV.toISOString().split('T')[0], cad: hoje.toISOString() }] });
         }
