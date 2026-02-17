@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Semma Digital - Gestão de Licenças</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
         body { background-color: #f4f7f6; font-family: sans-serif; }
         .card-custom { border-top: 6px solid #198754; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
@@ -14,13 +15,22 @@
         .status-vencido { background-color: #dc3545 !important; color: white !important; padding: 8px; border-radius: 5px; font-weight: bold; }
         .badge-status { min-width: 100px; display: inline-block; text-align: center; text-transform: uppercase; font-size: 11px; }
         .obrigatorio::after { content: " *"; color: red; }
+        
+        /* Estilos do Dashboard */
+        .stat-card { border-radius: 10px; border: none; color: white; transition: transform 0.3s; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .bg-total { background: linear-gradient(45deg, #2c3e50, #4ca1af); }
+        .bg-vencido { background: linear-gradient(45deg, #d31027, #ea384d); }
+        .bg-alerta { background: linear-gradient(45deg, #f85032, #f16232); }
+        .stat-number { font-size: 2.5rem; font-weight: bold; }
+        .stat-label { font-size: 0.9rem; text-transform: uppercase; opacity: 0.9; }
     </style>
 </head>
 <body>
 <div class="container pb-5">
     <div class="brand-cda">
         <h2>SEMMA DIGITAL</h2>
-        <p class="text-muted">A Capital da Tecnologia</p>
+        <p class="text-muted">A Capital da Tecnologia - Conceição do Araguaia</p>
     </div>
 
     <div class="row justify-content-center">
@@ -28,7 +38,7 @@
             <div class="card card-custom p-4">
                 <h4 class="fw-bold mb-3 text-center">CONSULTAR LICENÇAS</h4>
                 <div class="input-group mb-4">
-                    <input type="text" id="cnpjBusca" class="form-control form-control-lg" placeholder="Digite o CNPJ">
+                    <input type="text" id="cnpjBusca" class="form-control form-control-lg" placeholder="Digite o CNPJ para fiscalização">
                     <button onclick="consultar()" class="btn btn-success btn-lg px-4">BUSCAR</button>
                 </div>
                 <div id="resultadoBusca" class="d-none text-start">
@@ -49,6 +59,30 @@
 
     <hr class="my-5">
 
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card bg-total p-3 text-center mb-3">
+                <div class="stat-label">Empresas na Base</div>
+                <div class="stat-number" id="statTotalEmpresas">0</div>
+                <i class="bi bi-building fs-1 opacity-25"></i>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card bg-vencido p-3 text-center mb-3">
+                <div class="stat-label">Licenças Vencidas</div>
+                <div class="stat-number" id="statVencidas">0</div>
+                <i class="bi bi-exclamation-octagon fs-1 opacity-25"></i>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card bg-alerta p-3 text-center mb-3">
+                <div class="stat-label">Em Renovação</div>
+                <div class="stat-number" id="statAlerta">0</div>
+                <i class="bi bi-clock-history fs-1 opacity-25"></i>
+            </div>
+        </div>
+    </div>
+
     <div class="row justify-content-center">
         <div class="col-md-9">
             <div class="card card-custom p-4 bg-white text-start">
@@ -61,9 +95,9 @@
                     <div class="col-md-6 mb-3"><label class="form-label fw-bold small obrigatorio">Tipo de Licença:</label><input type="text" id="licNome" class="form-control" placeholder="Ex: LO - Operação"></div>
                     <div class="col-md-6 mb-3"><label class="form-label fw-bold small obrigatorio">Data de Vencimento:</label><input type="date" id="licData" class="form-control"></div>
                 </div>
-                <button onclick="salvar()" class="btn btn-primary btn-lg fw-bold w-100 mt-2 mb-4">SALVAR</button>
+                <button onclick="salvar()" class="btn btn-primary btn-lg fw-bold w-100 mt-2 mb-4 shadow">SALVAR REGISTRO</button>
 
-                <h5 class="fw-bold text-muted border-bottom pb-2">Gerenciar Registros</h5>
+                <h5 class="fw-bold text-muted border-bottom pb-2">Gerenciar Registros Cadastrados</h5>
                 <div class="table-responsive">
                     <table class="table table-sm mt-2 small">
                         <thead><tr><th>CNPJ</th><th>Empresa</th><th>Licença</th><th class="text-center">Ação</th></tr></thead>
@@ -86,6 +120,33 @@
 <script>
     let bancoLicencas = JSON.parse(localStorage.getItem('bancoSemma')) || [];
 
+    function atualizarInterface() {
+        atualizarListaGerenciar();
+        calcularEstatisticas();
+    }
+
+    function calcularEstatisticas() {
+        const hoje = new Date();
+        hoje.setHours(0,0,0,0);
+        
+        let totalVencidas = 0;
+        let totalAlerta = 0;
+
+        bancoLicencas.forEach(emp => {
+            emp.licencas.forEach(lic => {
+                const dv = new Date(lic.vencimento + 'T00:00:00');
+                const diff = Math.floor((dv - hoje) / (1000*60*60*24));
+                
+                if(diff < 0) totalVencidas++;
+                else if(diff <= 120) totalAlerta++;
+            });
+        });
+
+        document.getElementById('statTotalEmpresas').innerText = bancoLicencas.length;
+        document.getElementById('statVencidas').innerText = totalVencidas;
+        document.getElementById('statAlerta').innerText = totalAlerta;
+    }
+
     function atualizarListaGerenciar() {
         const corpo = document.getElementById('listaGerenciar');
         corpo.innerHTML = "";
@@ -97,7 +158,7 @@
                         <td class="text-truncate" style="max-width: 150px;">${emp.empresa}</td>
                         <td>${lic.tipo}</td>
                         <td class="text-center">
-                            <button onclick="excluir(${empIdx}, ${licIdx})" class="btn btn-danger btn-sm">Excluir</button>
+                            <button onclick="excluir(${empIdx}, ${licIdx})" class="btn btn-outline-danger btn-sm">Excluir</button>
                         </td>
                     </tr>`;
             });
@@ -115,19 +176,22 @@
         };
 
         if(!dados.cnpj || !dados.nome || !dados.cel || !dados.mail || !dados.lNome || !dados.lData) {
-            return alert("⚠️ Preencha todos os campos!");
+            return alert("⚠️ Todos os campos são obrigatórios!");
         }
 
         let empExistente = bancoLicencas.find(e => e.cnpj === dados.cnpj);
         if(empExistente) {
             empExistente.licencas.push({ tipo: dados.lNome, vencimento: dados.lData });
+            empExistente.empresa = dados.nome;
+            empExistente.celular = dados.cel;
+            empExistente.email = dados.mail;
         } else {
             bancoLicencas.push({ cnpj: dados.cnpj, empresa: dados.nome, celular: dados.cel, email: dados.mail, licencas: [{ tipo: dados.lNome, vencimento: dados.lData }] });
         }
 
         localStorage.setItem('bancoSemma', JSON.stringify(bancoLicencas));
-        alert("✅ Salvo!");
-        atualizarListaGerenciar();
+        alert("✅ Registro salvo com sucesso!");
+        atualizarInterface();
         document.getElementById('licNome').value = "";
         document.getElementById('licData').value = "";
     }
@@ -139,7 +203,7 @@
                 bancoLicencas.splice(empIdx, 1);
             }
             localStorage.setItem('bancoSemma', JSON.stringify(bancoLicencas));
-            atualizarListaGerenciar();
+            atualizarInterface();
         }
     }
 
@@ -161,10 +225,10 @@
                 let txt = diff < 0 ? "VENCIDO" : (diff <= 120 ? "RENOVAÇÃO" : "VIGENTE");
                 resTabela.innerHTML += `<tr><td>${lic.tipo}</td><td>${dv.toLocaleDateString('pt-BR')}</td><td class="text-center"><span class="badge-status ${cor}">${txt}</span></td></tr>`;
             });
-        } else { alert("❌ Não encontrado!"); }
+        } else { alert("❌ CNPJ não encontrado!"); }
     }
 
-    window.onload = atualizarListaGerenciar;
+    window.onload = atualizarInterface;
 </script>
 </body>
 </html>
