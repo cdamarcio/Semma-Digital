@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Semma Digital - Demonstração</title>
+    <title>Semma Digital - Demo 100 Empresas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
@@ -18,14 +18,7 @@
         .bg-vencido { background: linear-gradient(45deg, #870000, #dc3545); }
         .bg-alerta { background: linear-gradient(45deg, #d35400, #fd7e14); }
         .obrigatorio::after { content: " *"; color: red; }
-        
-        @media print {
-            .no-print, .btn, .btn-group, .painel-admin, .input-group, hr, #fileInput, .stat-card, footer { display: none !important; }
-            .container { width: 100% !important; max-width: 100% !important; padding: 0 !important; }
-            .card-custom { border: none !important; box-shadow: none !important; }
-            .table { width: 100% !important; border: 1px solid #dee2e6 !important; }
-            .status-vigente, .status-renovacao, .status-vencido { color: black !important; background: none !important; border: 1px solid #ccc !important; }
-        }
+        @media print { .no-print, .btn, .painel-admin, .stat-card, footer { display: none !important; } }
     </style>
 </head>
 <body>
@@ -36,9 +29,9 @@
     </div>
 
     <div class="row justify-content-center mb-4 mt-4 no-print">
-        <div class="col-md-3"><div class="card stat-card bg-total text-center shadow"><h6>EMPRESAS</h6><div class="display-6 fw-bold" id="statTotal">0</div></div></div>
-        <div class="col-md-3"><div class="card stat-card bg-vencido text-center shadow"><h6>VENCIDAS</h6><div class="display-6 fw-bold" id="statVencidas">0</div></div></div>
-        <div class="col-md-3"><div class="card stat-card bg-alerta text-center shadow"><h6>RENOVAÇÃO (60d)</h6><div class="display-6 fw-bold" id="statAlerta">0</div></div></div>
+        <div class="col-md-3"><div class="card stat-card bg-total shadow"><h6>EMPRESAS</h6><div class="display-6 fw-bold" id="statTotal">0</div></div></div>
+        <div class="col-md-3"><div class="card stat-card bg-vencido shadow"><h6>VENCIDAS</h6><div class="display-6 fw-bold" id="statVencidas">0</div></div></div>
+        <div class="col-md-3"><div class="card stat-card bg-alerta shadow"><h6>RENOVAÇÃO (60d)</h6><div class="display-6 fw-bold" id="statAlerta">0</div></div></div>
     </div>
 
     <div class="row justify-content-center">
@@ -48,12 +41,10 @@
                     <h4 class="fw-bold mb-0">RELATÓRIO DE CONSULTA</h4>
                     <button onclick="window.print()" class="btn btn-outline-dark fw-bold no-print"><i class="bi bi-printer"></i> IMPRIMIR</button>
                 </div>
-
                 <div class="input-group mb-4 no-print">
                     <input type="text" id="cnpjBusca" class="form-control form-control-lg" placeholder="Digite o CNPJ">
                     <button onclick="consultar()" class="btn btn-success btn-lg px-4 fw-bold">BUSCAR</button>
                 </div>
-
                 <div id="resultadoBusca" class="d-none text-start">
                     <div class="p-3 rounded mb-3 bg-light border-start border-5 border-success">
                         <h4 class="fw-bold text-success mb-1" id="resNome"></h4>
@@ -68,7 +59,6 @@
                             <tbody id="resTabela"></tbody>
                         </table>
                     </div>
-                    <p class="small text-muted mt-3">Documento gerado eletronicamente em: <span id="dataRelatorio"></span></p>
                 </div>
             </div>
         </div>
@@ -80,36 +70,24 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h4 class="fw-bold text-danger mb-0">PAINEL ADMINISTRADOR</h4>
                     <div class="btn-group">
+                        <button onclick="povoarBanco()" class="btn btn-primary btn-sm fw-bold">GERAR 100 EMPRESAS</button>
                         <button onclick="exportarBackup()" class="btn btn-dark btn-sm">Exportar</button>
-                        <button onclick="document.getElementById('fileInput').click()" class="btn btn-dark btn-sm">Importar</button>
+                        <button onclick="importarBackupClick()" class="btn btn-dark btn-sm">Importar</button>
                         <input type="file" id="fileInput" class="d-none" onchange="importarBackup(event)">
                     </div>
                 </div>
-
-                <div class="row text-start">
-                    <div class="col-md-4 mb-3"><label class="fw-bold small obrigatorio">CNPJ:</label><input type="text" id="cadCnpj" class="form-control"></div>
-                    <div class="col-md-8 mb-3"><label class="fw-bold small obrigatorio">Empresa:</label><input type="text" id="cadNome" class="form-control text-uppercase"></div>
-                    <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">WhatsApp:</label><input type="text" id="cadCel" class="form-control"></div>
-                    <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">E-mail:</label><input type="email" id="cadEmail" class="form-control"></div>
-                    <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">Licença:</label><input type="text" id="licTipo" class="form-control"></div>
-                    <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">Vencimento:</label><input type="date" id="licVenc" class="form-control"></div>
-                    <div class="col-md-8 mb-3"><label class="small fw-bold">Observações Técnicas:</label><input type="text" id="cadObsInput" class="form-control"></div>
+                <div class="row">
+                    <div class="col-md-4 mb-3"><label class="small fw-bold">CNPJ:</label><input type="text" id="cadCnpj" class="form-control"></div>
+                    <div class="col-md-8 mb-3"><label class="small fw-bold">Empresa:</label><input type="text" id="cadNome" class="form-control text-uppercase"></div>
+                    <div class="col-md-4 mb-3"><label class="small fw-bold">WhatsApp:</label><input type="text" id="cadCel" class="form-control"></div>
+                    <div class="col-md-4 mb-3"><label class="small fw-bold">E-mail:</label><input type="email" id="cadEmail" class="form-control"></div>
+                    <div class="col-md-4 mb-3"><label class="small fw-bold">Licença:</label><input type="text" id="licTipo" class="form-control"></div>
+                    <div class="col-md-4 mb-3"><label class="small fw-bold">Vencimento:</label><input type="date" id="licVenc" class="form-control"></div>
                 </div>
-                <button onclick="salvar()" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm">SALVAR CADASTRO</button>
-
-                <h6 class="fw-bold mt-5 border-bottom pb-2">Registros Cadastrados no Sistema</h6>
-                <div class="table-responsive">
-                    <table class="table table-sm table-striped mt-3 align-middle small">
-                        <thead>
-                            <tr>
-                                <th>Empresa</th>
-                                <th>CNPJ</th>
-                                <th>Licença</th>
-                                <th>Cadastro</th>
-                                <th>Vencimento</th>
-                                <th class="text-center">Ação</th>
-                            </tr>
-                        </thead>
+                <button onclick="salvar()" class="btn btn-primary btn-lg w-100 fw-bold">SALVAR REGISTRO</button>
+                <div class="table-responsive mt-5">
+                    <table class="table table-sm table-striped small align-middle">
+                        <thead><tr><th>Empresa</th><th>CNPJ</th><th>Licença</th><th>Vencimento</th><th class="text-center">Ação</th></tr></thead>
                         <tbody id="listaAdmin"></tbody>
                     </table>
                 </div>
@@ -119,7 +97,7 @@
 
     <footer class="mt-5 text-muted small no-print">                
         <a href="https://www.kmprojetos.eng.br/" target="_blank" style="text-decoration: none !important;">
-            <h2 class="fw-bold text-success" style="cursor: pointer; text-decoration: none !important; border: none !important;">www.kmprojetos.eng.br</h2>
+            <h2 class="fw-bold text-success">www.kmprojetos.eng.br</h2>
         </a>
         Desenvolvido por: <strong>Márcio Rodrigues de Oliveira</strong> <br>
         &copy; 2026 KM Engenharia & Tecnologia
@@ -134,21 +112,12 @@
         adminTbody.innerHTML = "";
         let v = 0, a = 0;
         const hoje = new Date(); hoje.setHours(0,0,0,0);
-
         db.forEach((e, ei) => {
             e.licencas.forEach((l, li) => {
                 const dv = new Date(l.venc + 'T00:00:00');
                 const diff = Math.floor((dv - hoje) / 86400000);
                 if(diff < 0) v++; else if(diff <= 60) a++;
-
-                adminTbody.innerHTML += `<tr>
-                    <td class="text-truncate" style="max-width: 150px;">${e.empresa}</td>
-                    <td>${e.cnpj}</td>
-                    <td>${l.tipo}</td>
-                    <td>${new Date(l.cad).toLocaleDateString('pt-BR')}</td>
-                    <td class="fw-bold">${dv.toLocaleDateString('pt-BR')}</td>
-                    <td class="text-center"><button onclick="deletar(${ei},${li})" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button></td>
-                </tr>`;
+                adminTbody.innerHTML += `<tr><td class="text-truncate" style="max-width:150px">${e.empresa}</td><td>${e.cnpj}</td><td>${l.tipo}</td><td>${dv.toLocaleDateString('pt-BR')}</td><td class="text-center"><button onclick="deletar(${ei},${li})" class="btn btn-danger btn-sm">X</button></td></tr>`;
             });
         });
         document.getElementById('statTotal').innerText = db.length;
@@ -156,16 +125,58 @@
         document.getElementById('statAlerta').innerText = a;
     }
 
+    function povoarBanco() {
+        if(!confirm("Isso irá adicionar 100 empresas de teste. Continuar?")) return;
+        const tipos = ["LO - Operação", "LI - Instalação", "LP - Prévia", "Outorga"];
+        const nomes = ["Agro", "Construtora", "Posto", "Madeireira", "Fazenda", "Indústria", "Comércio", "Mineração"];
+        const hoje = new Date();
+        
+        for(let i=1; i<=100; i++) {
+            const cnpj = (10000000000000 + i).toString();
+            const nome = nomes[Math.floor(Math.random()*nomes.length)] + " " + (100 + i) + " LTDA";
+            const diasAleatorios = Math.floor(Math.random() * 200) - 50; // Alguns vencidos, alguns futuros
+            const dataVenc = new Date();
+            dataVenc.setDate(hoje.getDate() + diasAleatorios);
+            
+            db.push({
+                cnpj: cnpj,
+                empresa: nome,
+                cel: "94991234567",
+                mail: "contato@empresa" + i + ".com",
+                obs: "Cadastro automático de demonstração",
+                licencas: [{ tipo: tipos[Math.floor(Math.random()*tipos.length)], venc: dataVenc.toISOString().split('T')[0], cad: hoje.toISOString() }]
+            });
+        }
+        localStorage.setItem('db_semma', JSON.stringify(db));
+        refresh();
+        alert("100 empresas geradas com sucesso!");
+    }
+
+    function salvar() {
+        const d = {
+            cnpj: document.getElementById('cadCnpj').value.replace(/\D/g, ''),
+            nome: document.getElementById('cadNome').value.toUpperCase(),
+            cel: document.getElementById('cadCel').value,
+            mail: document.getElementById('cadEmail').value,
+            lt: document.getElementById('licTipo').value,
+            lv: document.getElementById('licVenc').value,
+            cad: new Date().toISOString()
+        };
+        if(!d.cnpj || !d.nome || !d.lv) return alert("Preencha os campos!");
+        let emp = db.find(x => x.cnpj === d.cnpj);
+        if(emp) { emp.licencas.push({tipo:d.lt, venc:d.lv, cad:d.cad}); }
+        else { db.push({cnpj:d.cnpj, empresa:d.nome, cel:d.cel, mail:d.mail, licencas:[{tipo:d.lt, venc:d.lv, cad:d.cad}]}); }
+        localStorage.setItem('db_semma', JSON.stringify(db));
+        refresh();
+    }
+
     function consultar() {
         const busca = document.getElementById('cnpjBusca').value.replace(/\D/g, '');
         const e = db.find(x => x.cnpj === busca);
-        if(!e) return alert("CNPJ não encontrado!");
+        if(!e) return alert("Não encontrado!");
         document.getElementById('resultadoBusca').classList.remove('d-none');
         document.getElementById('resNome').innerText = e.empresa;
-        document.getElementById('resContatos').innerText = `CNPJ: ${e.cnpj} | WhatsApp: ${e.cel} | E-mail: ${e.mail}`;
-        document.getElementById('dataRelatorio').innerText = new Date().toLocaleString('pt-BR');
-        const obsDiv = document.getElementById('resObs');
-        if(e.obs) { obsDiv.innerText = "NOTAS: " + e.obs; obsDiv.classList.remove('d-none'); } else obsDiv.classList.add('d-none');
+        document.getElementById('resContatos').innerText = `CNPJ: ${e.cnpj} | Zap: ${e.cel}`;
         const t = document.getElementById('resTabela');
         t.innerHTML = "";
         const hoje = new Date(); hoje.setHours(0,0,0,0);
@@ -178,47 +189,12 @@
         });
     }
 
-    function salvar() {
-        const d = {
-            cnpj: document.getElementById('cadCnpj').value.replace(/\D/g, ''),
-            nome: document.getElementById('cadNome').value.toUpperCase(),
-            cel: document.getElementById('cadCel').value.replace(/\D/g, ''),
-            mail: document.getElementById('cadEmail').value,
-            lt: document.getElementById('licTipo').value,
-            lv: document.getElementById('licVenc').value,
-            ob: document.getElementById('cadObsInput').value,
-            cad: new Date().toISOString()
-        };
-        if(!d.cnpj || !d.nome || !d.lv) return alert("Preencha os campos obrigatórios!");
-        let emp = db.find(x => x.cnpj === d.cnpj);
-        if(emp) { 
-            emp.licencas.push({tipo:d.lt, venc:d.lv, cad:d.cad}); 
-            emp.empresa = d.nome; emp.cel = d.cel; emp.mail = d.mail; emp.obs = d.ob;
-        }
-        else { db.push({cnpj:d.cnpj, empresa:d.nome, cel:d.cel, mail:d.mail, obs:d.ob, licencas:[{tipo:d.lt, venc:d.lv, cad:d.cad}]}); }
-        localStorage.setItem('db_semma', JSON.stringify(db));
-        refresh(); alert("✅ Registro salvo com sucesso!");
-    }
-
-    function zap(n, t, d, c) {
-        window.open(`https://api.whatsapp.com/send?phone=55${c}&text=Olá ${n}, sua licença ${t} vence em ${d}. Favor regularizar.`);
-    }
+    function zap(n, t, d, c) { window.open(`https://api.whatsapp.com/send?phone=55${c}&text=Sua licença ${t} vence em ${d}.`); }
+    function deletar(ei, li) { db[ei].licencas.splice(li, 1); if(db[ei].licencas.length==0)db.splice(ei,1); localStorage.setItem('db_semma', JSON.stringify(db)); refresh(); }
+    function exportarBackup() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(db)], {type:"application/json"})); a.download = "backup.json"; a.click(); }
+    function importarBackupClick() { document.getElementById('fileInput').click(); }
+    function importarBackup(ev) { const r = new FileReader(); r.onload = e => { db = JSON.parse(e.target.result); localStorage.setItem('db_semma', JSON.stringify(db)); refresh(); }; r.readAsText(ev.target.files[0]); }
     
-    function deletar(ei, li) {
-        if(confirm("Deseja excluir esta licença?")) { db[ei].licencas.splice(li, 1); if(db[ei].licencas.length==0)db.splice(ei,1); localStorage.setItem('db_semma', JSON.stringify(db)); refresh(); }
-    }
-
-    function exportarBackup() {
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(new Blob([JSON.stringify(db)], {type:"application/json"}));
-        a.download = "backup_semma.json"; a.click();
-    }
-
-    function importarBackup(ev) {
-        const r = new FileReader(); r.onload = e => { db = JSON.parse(e.target.result); localStorage.setItem('db_semma', JSON.stringify(db)); refresh(); };
-        r.readAsText(ev.target.files[0]);
-    }
-
     window.onload = refresh;
 </script>
 </body>
