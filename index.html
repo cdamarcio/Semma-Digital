@@ -10,28 +10,22 @@
         body { background-color: #f4f7f6; font-family: sans-serif; }
         .card-custom { border-top: 6px solid #198754; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
         .brand-cda { color: #198754; font-weight: bold; text-align: center; margin-top: 20px; }
-        .status-vigente { background-color: #198754 !important; color: white !important; padding: 6px; border-radius: 5px; font-weight: bold; font-size: 10px; }
-        .status-renovacao { background-color: #fd7e14 !important; color: white !important; padding: 6px; border-radius: 5px; font-weight: bold; font-size: 10px; }
-        .status-vencido { background-color: #dc3545 !important; color: white !important; padding: 6px; border-radius: 5px; font-weight: bold; font-size: 10px; }
+        .status-vigente { background-color: #198754 !important; color: white !important; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 11px; }
+        .status-renovacao { background-color: #fd7e14 !important; color: white !important; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 11px; }
+        .status-vencido { background-color: #dc3545 !important; color: white !important; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 11px; }
         .obrigatorio::after { content: " *"; color: red; }
         .stat-card { border-radius: 10px; border: none; color: white; padding: 15px; }
         .bg-total { background: linear-gradient(45deg, #2c3e50, #4ca1af); }
         .bg-vencido { background: linear-gradient(45deg, #d31027, #ea384d); }
         .bg-alerta { background: linear-gradient(45deg, #f85032, #f16232); }
-        
-        @media print {
-            .btn, .input-group, hr, .brand-cda p, #fileInput, .painel-admin { display: none !important; }
-            .card-custom { border: none !important; box-shadow: none !important; }
-            body { background-color: white; }
-            .d-none-print { display: none !important; }
-        }
+        @media print { .btn, hr, .painel-admin, #fileInput { display: none !important; } }
     </style>
 </head>
 <body>
 <div class="container pb-5">
     <div class="brand-cda">
         <h2>SEMMA DIGITAL</h2>
-        <p class="text-muted">Gestão Ambiental - Conceição do Araguaia</p>
+        <p class="text-muted">Conceição do Araguaia - PA</p>
     </div>
 
     <div class="row justify-content-center mt-3">
@@ -39,7 +33,7 @@
             <div class="card card-custom p-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h4 class="fw-bold mb-0">CONSULTAR LICENÇAS</h4>
-                    <button onclick="window.print()" class="btn btn-outline-secondary btn-sm"><i class="bi bi-printer"></i> Imprimir</button>
+                    <button onclick="window.print()" class="btn btn-outline-secondary btn-sm d-none-print"><i class="bi bi-printer"></i> Imprimir</button>
                 </div>
                 <div class="input-group mb-4">
                     <input type="text" id="cnpjBusca" class="form-control form-control-lg" placeholder="Digite o CNPJ">
@@ -48,22 +42,13 @@
                 
                 <div id="resultadoBusca" class="d-none text-start">
                     <div class="bg-light p-3 rounded mb-3 border-start border-4 border-success">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <h5 class="fw-bold text-success mb-1" id="resNome"></h5>
-                                <p class="mb-0 small" id="resContatos"></p>
-                            </div>
-                            <div class="col-md-4 text-end">
-                                <span class="badge bg-secondary" id="resCnpj"></span>
-                            </div>
-                        </div>
+                        <h5 class="fw-bold text-success mb-1" id="resNome"></h5>
+                        <p class="mb-0 small" id="resContatos"></p>
                     </div>
-                    
                     <div id="resObservacoes" class="alert alert-warning py-2 small d-none"></div>
-
-                    <table class="table align-middle">
+                    <table class="table align-middle mt-3">
                         <thead class="table-dark">
-                            <tr><th>Licença</th><th>Vencimento</th><th>Status</th><th class="text-center d-none-print">Ação</th></tr>
+                            <tr><th>Licença</th><th>Vencimento</th><th>Status</th><th class="text-center d-none-print">Notificar</th></tr>
                         </thead>
                         <tbody id="resTabela"></tbody>
                     </table>
@@ -75,17 +60,17 @@
     <div class="row justify-content-center mb-4">
         <div class="col-md-3"><div class="card stat-card bg-total mb-2 text-center"><div>Empresas</div><div class="h3 fw-bold" id="statTotalEmpresas">0</div></div></div>
         <div class="col-md-3"><div class="card stat-card bg-vencido mb-2 text-center"><div>Vencidas</div><div class="h3 fw-bold" id="statVencidas">0</div></div></div>
-        <div class="col-md-3"><div class="card stat-card bg-alerta mb-2 text-center"><div>Renovação</div><div class="h3 fw-bold" id="statAlerta">0</div></div></div>
+        <div class="col-md-3"><div class="card stat-card bg-alerta mb-2 text-center"><div>Em Renovação</div><div class="h3 fw-bold" id="statAlerta">0</div></div></div>
     </div>
 
     <div class="row justify-content-center painel-admin">
         <div class="col-md-10 text-start">
             <div class="card card-custom p-4 bg-white">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="fw-bold text-danger mb-0">PAINEL ADMINISTRADOR</h4>
+                <div class="d-flex justify-content-between mb-4">
+                    <h4 class="fw-bold text-danger">PAINEL ADMINISTRADOR</h4>
                     <div>
-                        <button onclick="exportarBackup()" class="btn btn-outline-dark btn-sm"><i class="bi bi-download"></i> Backup</button>
-                        <button onclick="document.getElementById('fileInput').click()" class="btn btn-outline-dark btn-sm"><i class="bi bi-upload"></i> Restaurar</button>
+                        <button onclick="exportarBackup()" class="btn btn-dark btn-sm">Backup</button>
+                        <button onclick="document.getElementById('fileInput').click()" class="btn btn-dark btn-sm">Restaurar</button>
                         <input type="file" id="fileInput" class="d-none" onchange="importarBackup(event)">
                     </div>
                 </div>
@@ -93,52 +78,48 @@
                 <div class="row">
                     <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">CNPJ:</label><input type="text" id="cadCnpj" class="form-control"></div>
                     <div class="col-md-8 mb-3"><label class="small fw-bold obrigatorio">Empresa:</label><input type="text" id="cadNome" class="form-control text-uppercase"></div>
-                    <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">WhatsApp:</label><input type="text" id="cadCelular" class="form-control" placeholder="55949... (DDD+Número)"></div>
+                    <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">WhatsApp (com DDD):</label><input type="text" id="cadCelular" class="form-control" placeholder="94991234567"></div>
                     <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">E-mail:</label><input type="email" id="cadEmail" class="form-control"></div>
-                    <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">Licença (Ex: LO):</label><input type="text" id="licNome" class="form-control"></div>
+                    <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">Licença:</label><input type="text" id="licNome" class="form-control"></div>
                     <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">Vencimento:</label><input type="date" id="licData" class="form-control"></div>
-                    <div class="col-md-8 mb-3"><label class="small fw-bold">Observações Técnicas / Histórico:</label><input type="text" id="cadObs" class="form-control" placeholder="Ex: Aguardando vistoria"></div>
+                    <div class="col-md-8 mb-3"><label class="small fw-bold">Observações Técnicas:</label><input type="text" id="cadObs" class="form-control"></div>
                 </div>
-                <button onclick="salvar()" class="btn btn-primary btn-lg fw-bold w-100 mt-2 mb-4">SALVAR NO SISTEMA</button>
+                <button onclick="salvar()" class="btn btn-primary btn-lg fw-bold w-100">SALVAR NO SISTEMA</button>
 
-                <h6 class="fw-bold text-muted border-bottom pb-2">Registros Cadastrados</h6>
+                <h6 class="fw-bold text-muted border-bottom mt-4 pb-2">Registros Cadastrados</h6>
                 <div class="table-responsive">
                     <table class="table table-sm mt-2 small">
-                        <thead><tr><th>CNPJ</th><th>Empresa</th><th>Licença</th><th class="text-center">Ações</th></tr></thead>
+                        <thead><tr><th>CNPJ</th><th>Empresa</th><th>Licença</th><th>Ação</th></tr></thead>
                         <tbody id="listaGerenciar"></tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
-
-    <footer class="mt-5 text-center text-muted small">
-        <h6 class="fw-bold text-success">www.kmprojetos.eng.br</h6>
-        Desenvolvido por: Márcio Rodrigues de Oliveira | &copy; 2026
-    </footer>
 </div>
 
 <script>
     let bancoLicencas = JSON.parse(localStorage.getItem('bancoSemma')) || [];
 
     function atualizarInterface() {
-        atualizarListaGerenciar();
-        calcularEstatisticas();
-    }
-
-    function calcularEstatisticas() {
+        const corpoGerenciar = document.getElementById('listaGerenciar');
+        corpoGerenciar.innerHTML = "";
+        let totalVencidas = 0, totalAlerta = 0;
         const hoje = new Date(); hoje.setHours(0,0,0,0);
-        let venc = 0, alert = 0;
-        bancoLicencas.forEach(emp => {
-            emp.licencas.forEach(lic => {
+
+        bancoLicencas.forEach((emp, empIdx) => {
+            emp.licencas.forEach((lic, licIdx) => {
                 const dv = new Date(lic.vencimento + 'T00:00:00');
                 const diff = Math.floor((dv - hoje) / 86400000);
-                if(diff < 0) venc++; else if(diff <= 120) alert++;
+                if(diff < 0) totalVencidas++; else if(diff <= 120) totalAlerta++;
+
+                corpoGerenciar.innerHTML += `<tr><td>${emp.cnpj}</td><td>${emp.empresa}</td><td>${lic.tipo}</td><td><button onclick="excluir(${empIdx}, ${licIdx})" class="btn btn-danger btn-sm">X</button></td></tr>`;
             });
         });
+
         document.getElementById('statTotalEmpresas').innerText = bancoLicencas.length;
-        document.getElementById('statVencidas').innerText = venc;
-        document.getElementById('statAlerta').innerText = alert;
+        document.getElementById('statVencidas').innerText = totalVencidas;
+        document.getElementById('statAlerta').innerText = totalAlerta;
     }
 
     function salvar() {
@@ -151,74 +132,61 @@
             ld: document.getElementById('licData').value,
             obs: document.getElementById('cadObs').value.trim()
         };
+        if(!d.cnpj || !d.nome || !d.cel || !d.mail || !d.ln || !d.ld) return alert("Preencha os campos obrigatórios!");
 
-        if(!d.cnpj || !d.nome || !d.cel || !d.mail || !d.ln || !d.ld) return alert("Preencha todos os campos obrigatórios!");
-        
         let ex = bancoLicencas.find(e => e.cnpj === d.cnpj);
         if(ex) {
             ex.licencas.push({ tipo: d.ln, vencimento: d.ld });
-            ex.empresa = d.nome; ex.celular = d.cel; ex.email = d.mail; ex.observacoes = d.obs;
+            ex.celular = d.cel; ex.email = d.mail; ex.observacoes = d.obs;
         } else {
             bancoLicencas.push({ cnpj: d.cnpj, empresa: d.nome, celular: d.cel, email: d.mail, observacoes: d.obs, licencas: [{ tipo: d.ln, vencimento: d.ld }] });
         }
         localStorage.setItem('bancoSemma', JSON.stringify(bancoLicencas));
         atualizarInterface();
-        alert("✅ Salvo com sucesso!");
-    }
-
-    function enviarZap(nomeEmpresa, tipoLicenca, dataVenc, celular) {
-        const msg = encodeURIComponent(`Olá, somos da SEMMA-CDA. Identificamos que a licença ${tipoLicenca} da empresa ${nomeEmpresa} vence em ${dataVenc}. Favor comparecer à secretaria para regularização.`);
-        window.open(`https://api.whatsapp.com/send?phone=${celular}&text=${msg}`, '_blank');
+        alert("✅ Salvo!");
     }
 
     function consultar() {
         const c = document.getElementById('cnpjBusca').value.replace(/\D/g, '');
         const e = bancoLicencas.find(x => x.cnpj === c);
         const t = document.getElementById('resTabela');
-        const dRes = document.getElementById('resultadoBusca');
+        if(!e) return alert("CNPJ não encontrado!");
+
+        document.getElementById('resultadoBusca').classList.remove('d-none');
+        document.getElementById('resNome').innerText = e.empresa;
+        document.getElementById('resContatos').innerText = `WhatsApp: ${e.celular} | E-mail: ${e.email}`;
         
-        if(e) {
-            dRes.classList.remove('d-none');
-            document.getElementById('resNome').innerText = e.empresa;
-            document.getElementById('resCnpj').innerText = `CNPJ: ${e.cnpj}`;
-            document.getElementById('resContatos').innerText = `WhatsApp: ${e.celular} | E-mail: ${e.email}`;
+        const divObs = document.getElementById('resObservacoes');
+        if(e.observacoes) { divObs.innerText = "NOTAS: " + e.observacoes; divObs.classList.remove('d-none'); }
+        else divObs.classList.add('d-none');
+
+        t.innerHTML = "";
+        const hoje = new Date(); hoje.setHours(0,0,0,0);
+        e.licencas.forEach(l => {
+            const dv = new Date(l.vencimento + 'T00:00:00');
+            const diff = Math.floor((dv - hoje) / 86400000);
+            let cor = diff < 0 ? "status-vencido" : (diff <= 120 ? "status-renovacao" : "status-vigente");
+            let txt = diff < 0 ? "VENCIDO" : (diff <= 120 ? "RENOVAÇÃO" : "VIGENTE");
             
-            const divObs = document.getElementById('resObservacoes');
-            if(e.observacoes) { divObs.innerText = "OBSERVAÇÕES: " + e.observacoes; divObs.classList.remove('d-none'); }
-            else { divObs.classList.add('d-none'); }
-
-            t.innerHTML = "";
-            const hoje = new Date(); hoje.setHours(0,0,0,0);
-            e.licencas.forEach(l => {
-                const dv = new Date(l.vencimento + 'T00:00:00');
-                const dFormat = dv.toLocaleDateString('pt-BR');
-                const diff = Math.floor((dv - hoje) / 86400000);
-                let cor = diff < 0 ? "status-vencido" : (diff <= 120 ? "status-renovacao" : "status-vigente");
-                let txt = diff < 0 ? "VENCIDO" : (diff <= 120 ? "RENOVAÇÃO" : "VIGENTE");
-                
-                t.innerHTML += `<tr>
-                    <td>${l.tipo}</td>
-                    <td>${dFormat}</td>
-                    <td><span class="${cor}">${txt}</span></td>
-                    <td class="text-center d-none-print">
-                        <button onclick="enviarZap('${e.empresa}', '${l.tipo}', '${dFormat}', '${e.celular}')" class="btn btn-success btn-sm"><i class="bi bi-whatsapp"></i> Notificar</button>
-                    </td>
-                </tr>`;
-            });
-        } else alert("CNPJ não encontrado!");
-    }
-
-    function atualizarListaGerenciar() {
-        const corpo = document.getElementById('listaGerenciar'); corpo.innerHTML = "";
-        bancoLicencas.forEach((emp, eI) => {
-            emp.licencas.forEach((lic, lI) => {
-                corpo.innerHTML += `<tr><td>${emp.cnpj}</td><td>${emp.empresa}</td><td>${lic.tipo}</td><td class="text-center"><button onclick="excluir(${eI}, lI)" class="btn btn-danger btn-sm">Remover</button></td></tr>`;
-            });
+            t.innerHTML += `<tr>
+                <td>${l.tipo}</td>
+                <td>${dv.toLocaleDateString('pt-BR')}</td>
+                <td><span class="${cor}">${txt}</span></td>
+                <td class="text-center">
+                    <button onclick="zap('${e.empresa}','${l.tipo}','${dv.toLocaleDateString('pt-BR')}','${e.celular}')" class="btn btn-success btn-sm">Notificar</button>
+                </td>
+            </tr>`;
         });
     }
 
+    function zap(emp, lic, data, cel) {
+        let fCel = cel.startsWith('55') ? cel : '55' + cel;
+        const msg = encodeURIComponent(`Olá, ${emp}. Somos da SEMMA-CDA. A licença ${lic} vence em ${data}. Favor regularizar.`);
+        window.open(`https://api.whatsapp.com/send?phone=${fCel}&text=${msg}`, '_blank');
+    }
+
     function excluir(eI, lI) {
-        if(confirm("Excluir registro?")) {
+        if(confirm("Excluir?")) {
             bancoLicencas[eI].licencas.splice(lI, 1);
             if(bancoLicencas[eI].licencas.length === 0) bancoLicencas.splice(eI, 1);
             localStorage.setItem('bancoSemma', JSON.stringify(bancoLicencas));
@@ -228,13 +196,12 @@
 
     function exportarBackup() {
         const blob = new Blob([JSON.stringify(bancoLicencas)], {type: "application/json"});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = "backup_semma.json"; a.click();
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "backup_semma.json"; a.click();
     }
 
     function importarBackup(event) {
         const reader = new FileReader();
-        reader.onload = e => { bancoLicencas = JSON.parse(e.target.result); localStorage.setItem('bancoSemma', JSON.stringify(bancoLicencas)); atualizarInterface(); alert("Restaurado!"); };
+        reader.onload = e => { bancoLicencas = JSON.parse(e.target.result); localStorage.setItem('bancoSemma', JSON.stringify(bancoLicencas)); atualizarInterface(); alert("OK!"); };
         reader.readAsText(event.target.files[0]);
     }
 
