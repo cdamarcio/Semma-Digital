@@ -42,7 +42,7 @@
                     <button onclick="window.print()" class="btn btn-outline-dark fw-bold no-print"><i class="bi bi-printer"></i> IMPRIMIR</button>
                 </div>
                 <div class="input-group mb-4 no-print">
-                    <input type="text" id="cnpjBusca" class="form-control form-control-lg" placeholder="Digite o CNPJ para fiscalização">
+                    <input type="text" id="cnpjBusca" class="form-control form-control-lg" placeholder="Digite o CNPJ">
                     <button onclick="consultar()" class="btn btn-success btn-lg px-4 fw-bold">BUSCAR</button>
                 </div>
                 <div id="resultadoBusca" class="d-none text-start">
@@ -63,14 +63,22 @@
         </div>
     </div>
 
-    <div class="row justify-content-center mt-5 painel-admin no-print">
-        <div class="col-md-11 text-start">
+    <div class="row justify-content-center mt-5 painel-admin no-print text-start">
+        <div class="col-md-11">
             <div class="card card-custom p-4 bg-white shadow">
-                <h4 class="fw-bold text-danger mb-4"><i class="bi bi-person-badge"></i> CADASTRO TÉCNICO</h4>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold text-danger mb-0"><i class="bi bi-person-badge"></i> PAINEL ADMINISTRADOR</h4>
+                    <div class="btn-group">
+                        <button onclick="povoarBanco()" class="btn btn-primary btn-sm fw-bold">GERAR 100 TESTES</button>
+                        <button onclick="exportarBackup()" class="btn btn-dark btn-sm">Exportar</button>
+                        <button onclick="importarBackupClick()" class="btn btn-dark btn-sm">Importar</button>
+                        <input type="file" id="fileInput" class="d-none" onchange="importarBackup(event)">
+                    </div>
+                </div>
                 
                 <div class="row bg-light p-3 rounded mb-4 border">
-                    <div class="col-md-6 mb-3"><label class="small fw-bold obrigatorio">NOME DO SERVIDOR:</label><input type="text" id="servidorNome" class="form-control" placeholder="Nome completo do responsável"></div>
-                    <div class="col-md-6 mb-3"><label class="small fw-bold obrigatorio">CARGO:</label><input type="text" id="servidorCargo" class="form-control" placeholder="Ex: Analista Ambiental"></div>
+                    <div class="col-md-6 mb-3"><label class="small fw-bold obrigatorio">NOME DO SERVIDOR:</label><input type="text" id="servidorNome" class="form-control"></div>
+                    <div class="col-md-6 mb-3"><label class="small fw-bold obrigatorio">CARGO:</label><input type="text" id="servidorCargo" class="form-control"></div>
                 </div>
 
                 <div class="row">
@@ -89,22 +97,14 @@
                         </select>
                     </div>
                     <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">VENCIMENTO:</label><input type="date" id="licVenc" class="form-control"></div>
-                    <div class="col-md-8 mb-3"><label class="small fw-bold">OBSERVAÇÕES:</label><input type="text" id="cadObsInput" class="form-control"></div>
                 </div>
-                
-                <button onclick="salvar()" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm">SALVAR REGISTRO</button>
+                <button onclick="salvar()" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm">SALVAR CADASTRO</button>
 
-                <h6 class="fw-bold mt-5 border-bottom pb-2">GERENCIAMENTO DE REGISTROS ATIVOS</h6>
+                <h6 class="fw-bold mt-5 border-bottom pb-2 text-muted">GERENCIAMENTO DE REGISTROS</h6>
                 <div class="table-responsive">
                     <table class="table table-sm table-striped mt-3 align-middle small">
-                        <thead>
-                            <tr class="table-secondary">
-                                <th>Empresa</th>
-                                <th>Licença</th>
-                                <th>Vencimento</th>
-                                <th>Servidor Responsável</th>
-                                <th class="text-center">Ações</th>
-                            </tr>
+                        <thead class="table-secondary">
+                            <tr><th>Empresa</th><th>Licença</th><th>Vencimento</th><th>Servidor Responsável</th><th class="text-center">Ações</th></tr>
                         </thead>
                         <tbody id="listaAdmin"></tbody>
                     </table>
@@ -140,9 +140,9 @@
                     <td><strong>${e.empresa}</strong><br><small class="text-muted">${e.cnpj}</small></td>
                     <td>${l.tipo}</td>
                     <td>${dv.toLocaleDateString('pt-BR')}</td>
-                    <td><i class="bi bi-person-check"></i> ${l.servidor || '---'}<br><small class="text-muted">${l.cargo || ''}</small></td>
+                    <td><i class="bi bi-person-check"></i> ${l.servidor || 'SISTEMA'}<br><small class="text-muted">${l.cargo || 'Automático'}</small></td>
                     <td class="text-center">
-                        <button onclick="deletar(${ei},${li})" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
+                        <button onclick="deletar(${ei},${li})" class="btn btn-danger btn-sm">X</button>
                     </td>
                 </tr>`;
             });
@@ -150,6 +150,35 @@
         document.getElementById('statTotal').innerText = db.length;
         document.getElementById('statVencidas').innerText = v;
         document.getElementById('statAlerta').innerText = a;
+    }
+
+    function povoarBanco() {
+        if(!confirm("Gerar 100 empresas de teste com servidores aleatórios?")) return;
+        const tipos = ["LO - Licença de Operação", "LI - Licença de Instalação", "LP - Licença Prévia", "Outorga"];
+        const nomes = ["Fazenda", "Construtora", "Posto", "Madeireira", "Mineração"];
+        const servidores = ["Márcio Oliveira", "Késia Quadros", "Adélio Machado", "Felipe Rodrigues"];
+        const cargos = ["Analista Ambiental", "Engenheiro Civil", "Fiscal de Meio Ambiente", "Gestor de Sistemas"];
+        const hoje = new Date();
+        
+        for(let i=1; i<=100; i++) {
+            const cnpj = (50000000000000 + i).toString();
+            const dV = new Date(); dV.setDate(hoje.getDate() + (Math.floor(Math.random()*150)-30));
+            db.push({ 
+                cnpj, 
+                empresa: nomes[Math.floor(Math.random()*5)]+" "+(100+i), 
+                cel: "94991234567", 
+                mail: "test@demo.com", 
+                licencas: [{ 
+                    tipo: tipos[Math.floor(Math.random()*4)], 
+                    venc: dV.toISOString().split('T')[0], 
+                    cad: hoje.toISOString(),
+                    servidor: servidores[Math.floor(Math.random()*4)],
+                    cargo: cargos[Math.floor(Math.random()*4)]
+                }] 
+            });
+        }
+        localStorage.setItem('db_semma', JSON.stringify(db)); refresh();
+        alert("✅ 100 registros gerados com servidores e cargos!");
     }
 
     function salvar() {
@@ -164,44 +193,37 @@
             lv: document.getElementById('licVenc').value,
             cad: new Date().toISOString()
         };
-
-        if(!sNome || !sCargo || !d.cnpj || !d.nome || !d.lv) return alert("⚠️ Identificação do servidor e dados da empresa são obrigatórios!");
-
+        if(!sNome || !sCargo || !d.cnpj || !d.nome || !d.lv) return alert("⚠️ Campos do Servidor e da Empresa são obrigatórios!");
         let emp = db.find(x => x.cnpj === d.cnpj);
-        const novaLicenca = { tipo: d.lt, venc: d.lv, cad: d.cad, servidor: sNome, cargo: sCargo };
-
-        if(emp) { 
-            emp.licencas.push(novaLicenca); 
-            emp.empresa = d.nome; emp.cel = d.cel; emp.mail = d.mail;
-        } else { 
-            db.push({ cnpj: d.cnpj, empresa: d.nome, cel: d.cel, mail: d.mail, licencas: [novaLicenca] }); 
-        }
-
-        localStorage.setItem('db_semma', JSON.stringify(db));
-        refresh(); alert("✅ Registro salvo por " + sNome);
+        const nl = { tipo: d.lt, venc: d.lv, cad: d.cad, servidor: sNome, cargo: sCargo };
+        if(emp) { emp.licencas.push(nl); emp.empresa=d.nome; emp.cel=d.cel; emp.mail=d.mail; }
+        else { db.push({ cnpj: d.cnpj, empresa: d.nome, cel: d.cel, mail: d.mail, licencas: [nl] }); }
+        localStorage.setItem('db_semma', JSON.stringify(db)); refresh(); alert("✅ Registro salvo!");
     }
 
     function consultar() {
         const busca = document.getElementById('cnpjBusca').value.replace(/\D/g, '');
         const e = db.find(x => x.cnpj === busca);
-        if(!e) return alert("CNPJ não encontrado!");
+        if(!e) return alert("Não encontrado!");
         document.getElementById('resultadoBusca').classList.remove('d-none');
         document.getElementById('resNome').innerText = e.empresa;
         document.getElementById('resContatos').innerText = `CNPJ: ${e.cnpj} | WhatsApp: ${e.cel}`;
-        const t = document.getElementById('resTabela');
-        t.innerHTML = "";
+        const t = document.getElementById('resTabela'); t.innerHTML = "";
         const hoje = new Date(); hoje.setHours(0,0,0,0);
         e.licencas.forEach(l => {
             const dv = new Date(l.venc + 'T00:00:00');
             const diff = Math.floor((dv - hoje) / 86400000);
-            let cor = diff < 0 ? "status-vencido" : (diff <= 30 ? "status-renovacao" : "status-vigente");
+            let cor = diff < 0 ? "status-vencid" : (diff <= 30 ? "status-renovacao" : "status-vigente");
             let txt = diff < 0 ? "VENCIDO" : (diff <= 30 ? "RENOVAÇÃO" : "VIGENTE");
             t.innerHTML += `<tr><td>${l.tipo}</td><td>${dv.toLocaleDateString('pt-BR')}</td><td><span class="${cor}">${txt}</span></td><td class="text-center no-print"><button onclick="zap('${e.empresa}','${l.tipo}','${dv.toLocaleDateString('pt-BR')}','${e.cel}')" class="btn btn-success btn-sm">Notificar</button></td></tr>`;
         });
     }
 
-    function zap(n, t, d, c) { window.open(`https://api.whatsapp.com/send?phone=55${c}&text=Sua licença ${t} vence em ${d}. Favor regularizar na SEMMA.`); }
+    function zap(n, t, d, c) { window.open(`https://api.whatsapp.com/send?phone=55${c}&text=Sua licença ${t} vence em ${d}.`); }
     function deletar(ei, li) { if(confirm("Excluir?")){db[ei].licencas.splice(li,1); if(db[ei].licencas.length==0)db.splice(ei,1); localStorage.setItem('db_semma', JSON.stringify(db)); refresh();}}
+    function exportarBackup() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(db)], {type:"application/json"})); a.download = "backup.json"; a.click(); }
+    function importarBackupClick() { document.getElementById('fileInput').click(); }
+    function importarBackup(ev) { const r = new FileReader(); r.onload = e => { db = JSON.parse(e.target.result); localStorage.setItem('db_semma', JSON.stringify(db)); refresh(); }; r.readAsText(ev.target.files[0]); }
     window.onload = refresh;
 </script>
 </body>
