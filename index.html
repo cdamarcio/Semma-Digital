@@ -35,14 +35,14 @@
     </div>
 
     <div class="row justify-content-center">
-        <div class="col-md-10">
+        <div class="col-md-11">
             <div class="card card-custom p-4 shadow">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h4 class="fw-bold mb-0">RELATÓRIO DE CONSULTA POR CNPJ</h4>
                     <button onclick="window.print()" class="btn btn-outline-dark fw-bold no-print"><i class="bi bi-printer"></i> IMPRIMIR</button>
                 </div>
                 <div class="input-group mb-4 no-print">
-                    <input type="text" id="cnpjBusca" class="form-control form-control-lg" placeholder="Digite o CNPJ">
+                    <input type="text" id="cnpjBusca" class="form-control form-control-lg" placeholder="Digite o CNPJ para fiscalização">
                     <button onclick="consultar()" class="btn btn-success btn-lg px-4 fw-bold">BUSCAR</button>
                 </div>
                 <div id="resultadoBusca" class="d-none text-start">
@@ -50,7 +50,6 @@
                         <h4 class="fw-bold text-success mb-1" id="resNome"></h4>
                         <p class="mb-0 text-muted" id="resContatos"></p>
                     </div>
-                    <div id="resObs" class="alert alert-warning d-none"></div>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead class="table-dark">
@@ -65,25 +64,22 @@
     </div>
 
     <div class="row justify-content-center mt-5 painel-admin no-print">
-        <div class="col-md-10 text-start">
+        <div class="col-md-11 text-start">
             <div class="card card-custom p-4 bg-white shadow">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="fw-bold text-danger mb-0">PAINEL ADMINISTRADOR</h4>
-                    <div class="btn-group">
-                        <button onclick="povoarBanco()" class="btn btn-primary btn-sm fw-bold">GERAR 100 TESTES</button>
-                        <button onclick="exportarBackup()" class="btn btn-dark btn-sm">Exportar</button>
-                        <button onclick="importarBackupClick()" class="btn btn-dark btn-sm">Importar</button>
-                        <input type="file" id="fileInput" class="d-none" onchange="importarBackup(event)">
-                    </div>
+                <h4 class="fw-bold text-danger mb-4"><i class="bi bi-person-badge"></i> CADASTRO TÉCNICO</h4>
+                
+                <div class="row bg-light p-3 rounded mb-4 border">
+                    <div class="col-md-6 mb-3"><label class="small fw-bold obrigatorio">NOME DO SERVIDOR:</label><input type="text" id="servidorNome" class="form-control" placeholder="Nome completo do responsável"></div>
+                    <div class="col-md-6 mb-3"><label class="small fw-bold obrigatorio">CARGO:</label><input type="text" id="servidorCargo" class="form-control" placeholder="Ex: Analista Ambiental"></div>
                 </div>
+
                 <div class="row">
-                    <div class="col-md-4 mb-3"><label class="fw-bold small obrigatorio">CNPJ:</label><input type="text" id="cadCnpj" class="form-control"></div>
-                    <div class="col-md-8 mb-3"><label class="fw-bold small obrigatorio">Empresa:</label><input type="text" id="cadNome" class="form-control text-uppercase"></div>
-                    <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">WhatsApp:</label><input type="text" id="cadCel" class="form-control"></div>
-                    <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">E-mail:</label><input type="email" id="cadEmail" class="form-control"></div>
-                    
+                    <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">CNPJ:</label><input type="text" id="cadCnpj" class="form-control"></div>
+                    <div class="col-md-8 mb-3"><label class="small fw-bold obrigatorio">RAZÃO SOCIAL:</label><input type="text" id="cadNome" class="form-control text-uppercase"></div>
+                    <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">WHATSAPP:</label><input type="text" id="cadCel" class="form-control"></div>
+                    <div class="col-md-4 mb-3"><label class="small fw-bold">E-MAIL:</label><input type="email" id="cadEmail" class="form-control"></div>
                     <div class="col-md-4 mb-3">
-                        <label class="small fw-bold obrigatorio">Licença Padrão:</label>
+                        <label class="small fw-bold obrigatorio">LICENÇA:</label>
                         <select id="licTipo" class="form-select">
                             <option value="LO - Licença de Operação">LO - Operação</option>
                             <option value="LI - Licença de Instalação">LI - Instalação</option>
@@ -92,14 +88,24 @@
                             <option value="Autorização Ambiental">Autorização</option>
                         </select>
                     </div>
-
-                    <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">Vencimento:</label><input type="date" id="licVenc" class="form-control"></div>
-                    <div class="col-md-8 mb-3"><label class="small fw-bold">Observações:</label><input type="text" id="cadObsInput" class="form-control"></div>
+                    <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">VENCIMENTO:</label><input type="date" id="licVenc" class="form-control"></div>
+                    <div class="col-md-8 mb-3"><label class="small fw-bold">OBSERVAÇÕES:</label><input type="text" id="cadObsInput" class="form-control"></div>
                 </div>
-                <button onclick="salvar()" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm">SALVAR CADASTRO</button>
-                <div class="table-responsive mt-5">
+                
+                <button onclick="salvar()" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm">SALVAR REGISTRO</button>
+
+                <h6 class="fw-bold mt-5 border-bottom pb-2">GERENCIAMENTO DE REGISTROS ATIVOS</h6>
+                <div class="table-responsive">
                     <table class="table table-sm table-striped mt-3 align-middle small">
-                        <thead><tr><th>Empresa</th><th>CNPJ</th><th>Licença</th><th>Cadastro</th><th>Vencimento</th><th class="text-center">Ação</th></tr></thead>
+                        <thead>
+                            <tr class="table-secondary">
+                                <th>Empresa</th>
+                                <th>Licença</th>
+                                <th>Vencimento</th>
+                                <th>Servidor Responsável</th>
+                                <th class="text-center">Ações</th>
+                            </tr>
+                        </thead>
                         <tbody id="listaAdmin"></tbody>
                     </table>
                 </div>
@@ -129,7 +135,16 @@
                 const dv = new Date(l.venc + 'T00:00:00');
                 const diff = Math.floor((dv - hoje) / 86400000);
                 if(diff < 0) v++; else if(diff <= 30) a++;
-                adminTbody.innerHTML += `<tr><td class="text-truncate" style="max-width:150px">${e.empresa}</td><td>${e.cnpj}</td><td>${l.tipo}</td><td>${new Date(l.cad).toLocaleDateString('pt-BR')}</td><td>${dv.toLocaleDateString('pt-BR')}</td><td class="text-center"><button onclick="deletar(${ei},${li})" class="btn btn-danger btn-sm">X</button></td></tr>`;
+                
+                adminTbody.innerHTML += `<tr>
+                    <td><strong>${e.empresa}</strong><br><small class="text-muted">${e.cnpj}</small></td>
+                    <td>${l.tipo}</td>
+                    <td>${dv.toLocaleDateString('pt-BR')}</td>
+                    <td><i class="bi bi-person-check"></i> ${l.servidor || '---'}<br><small class="text-muted">${l.cargo || ''}</small></td>
+                    <td class="text-center">
+                        <button onclick="deletar(${ei},${li})" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
             });
         });
         document.getElementById('statTotal').innerText = db.length;
@@ -137,31 +152,9 @@
         document.getElementById('statAlerta').innerText = a;
     }
 
-    function consultar() {
-        const busca = document.getElementById('cnpjBusca').value.replace(/\D/g, '');
-        const e = db.find(x => x.cnpj === busca);
-        if(!e) return alert("Não encontrado!");
-        document.getElementById('resultadoBusca').classList.remove('d-none');
-        document.getElementById('resNome').innerText = e.empresa;
-        document.getElementById('resContatos').innerText = `CNPJ: ${e.cnpj} | Zap: ${e.cel}`;
-        const t = document.getElementById('resTabela');
-        t.innerHTML = "";
-        const hoje = new Date(); hoje.setHours(0,0,0,0);
-        e.licencas.forEach(l => {
-            const dv = new Date(l.venc + 'T00:00:00');
-            const diff = Math.floor((dv - hoje) / 86400000);
-            let cor = diff < 0 ? "status-vencido" : (diff <= 30 ? "status-renovacao" : "status-vigente");
-            let txt = diff < 0 ? "VENCIDO" : (diff <= 30 ? "RENOVAÇÃO" : "VIGENTE");
-            t.innerHTML += `<tr><td>${l.tipo}</td><td>${dv.toLocaleDateString('pt-BR')}</td><td><span class="${cor}">${txt}</span></td><td class="text-center no-print"><button onclick="zap('${e.empresa}','${l.tipo}','${dv.toLocaleDateString('pt-BR')}','${e.cel}')" class="btn btn-success btn-sm">Zap</button></td></tr>`;
-        });
-    }
-
-    function zap(n, t, d, c) {
-        const msg = encodeURIComponent(`⚠️ ALERTA SEMMA: Prezado responsável pela empresa ${n}, informamos que sua licença ${t} vence em ${d} (prazo inferior a 30 dias). Favor regularizar urgentemente.`);
-        window.open(`https://api.whatsapp.com/send?phone=55${c}&text=${msg}`);
-    }
-
     function salvar() {
+        const sNome = document.getElementById('servidorNome').value.trim();
+        const sCargo = document.getElementById('servidorCargo').value.trim();
         const d = {
             cnpj: document.getElementById('cadCnpj').value.replace(/\D/g, ''),
             nome: document.getElementById('cadNome').value.toUpperCase(),
@@ -171,31 +164,44 @@
             lv: document.getElementById('licVenc').value,
             cad: new Date().toISOString()
         };
-        if(!d.cnpj || !d.nome || !d.lv) return alert("Preencha os campos!");
+
+        if(!sNome || !sCargo || !d.cnpj || !d.nome || !d.lv) return alert("⚠️ Identificação do servidor e dados da empresa são obrigatórios!");
+
         let emp = db.find(x => x.cnpj === d.cnpj);
-        if(emp) { emp.licencas.push({tipo:d.lt, venc:d.lv, cad:d.cad}); emp.cel=d.cel; emp.mail=d.mail; }
-        else { db.push({cnpj:d.cnpj, empresa:d.nome, cel:d.cel, mail:d.mail, licencas:[{tipo:d.lt, venc:d.lv, cad:d.cad}]}); }
-        localStorage.setItem('db_semma', JSON.stringify(db));
-        refresh(); alert("✅ Registro salvo!");
-    }
+        const novaLicenca = { tipo: d.lt, venc: d.lv, cad: d.cad, servidor: sNome, cargo: sCargo };
 
-    function povoarBanco() {
-        if(!confirm("Gerar 100 empresas de teste?")) return;
-        const tipos = ["LO - Operação", "LI - Instalação", "LP - Prévia", "Outorga"];
-        const nomes = ["Fazenda", "Construtora", "Posto", "Madeireira", "Mineração"];
-        const hoje = new Date();
-        for(let i=1; i<=100; i++) {
-            const cnpj = (40000000000000 + i).toString();
-            const dV = new Date(); dV.setDate(hoje.getDate() + (Math.floor(Math.random()*150)-30));
-            db.push({ cnpj, empresa: nomes[Math.floor(Math.random()*5)]+" "+i, cel: "94991234567", mail: "demo@cda.com", licencas: [{ tipo: tipos[Math.floor(Math.random()*4)], venc: dV.toISOString().split('T')[0], cad: hoje.toISOString() }] });
+        if(emp) { 
+            emp.licencas.push(novaLicenca); 
+            emp.empresa = d.nome; emp.cel = d.cel; emp.mail = d.mail;
+        } else { 
+            db.push({ cnpj: d.cnpj, empresa: d.nome, cel: d.cel, mail: d.mail, licencas: [novaLicenca] }); 
         }
-        localStorage.setItem('db_semma', JSON.stringify(db)); refresh();
+
+        localStorage.setItem('db_semma', JSON.stringify(db));
+        refresh(); alert("✅ Registro salvo por " + sNome);
     }
 
+    function consultar() {
+        const busca = document.getElementById('cnpjBusca').value.replace(/\D/g, '');
+        const e = db.find(x => x.cnpj === busca);
+        if(!e) return alert("CNPJ não encontrado!");
+        document.getElementById('resultadoBusca').classList.remove('d-none');
+        document.getElementById('resNome').innerText = e.empresa;
+        document.getElementById('resContatos').innerText = `CNPJ: ${e.cnpj} | WhatsApp: ${e.cel}`;
+        const t = document.getElementById('resTabela');
+        t.innerHTML = "";
+        const hoje = new Date(); hoje.setHours(0,0,0,0);
+        e.licencas.forEach(l => {
+            const dv = new Date(l.venc + 'T00:00:00');
+            const diff = Math.floor((dv - hoje) / 86400000);
+            let cor = diff < 0 ? "status-vencido" : (diff <= 30 ? "status-renovacao" : "status-vigente");
+            let txt = diff < 0 ? "VENCIDO" : (diff <= 30 ? "RENOVAÇÃO" : "VIGENTE");
+            t.innerHTML += `<tr><td>${l.tipo}</td><td>${dv.toLocaleDateString('pt-BR')}</td><td><span class="${cor}">${txt}</span></td><td class="text-center no-print"><button onclick="zap('${e.empresa}','${l.tipo}','${dv.toLocaleDateString('pt-BR')}','${e.cel}')" class="btn btn-success btn-sm">Notificar</button></td></tr>`;
+        });
+    }
+
+    function zap(n, t, d, c) { window.open(`https://api.whatsapp.com/send?phone=55${c}&text=Sua licença ${t} vence em ${d}. Favor regularizar na SEMMA.`); }
     function deletar(ei, li) { if(confirm("Excluir?")){db[ei].licencas.splice(li,1); if(db[ei].licencas.length==0)db.splice(ei,1); localStorage.setItem('db_semma', JSON.stringify(db)); refresh();}}
-    function exportarBackup() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(db)], {type:"application/json"})); a.download = "backup.json"; a.click(); }
-    function importarBackupClick() { document.getElementById('fileInput').click(); }
-    function importarBackup(ev) { const r = new FileReader(); r.onload = e => { db = JSON.parse(e.target.result); localStorage.setItem('db_semma', JSON.stringify(db)); refresh(); }; r.readAsText(ev.target.files[0]); }
     window.onload = refresh;
 </script>
 </body>
