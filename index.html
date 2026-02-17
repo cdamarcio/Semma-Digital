@@ -3,65 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Semma Digital - Conceição do Araguaia</title>
+    <title>Semma Digital - Consulta por CNPJ</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
-        body { background-color: #f4f7f6; }
-        .card-calc { border-top: 6px solid #198754; border-radius: 12px; }
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; }
+        .card-custom { border-top: 6px solid #198754; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .brand-cda { color: #198754; font-weight: bold; }
+        .status-vencido { color: #dc3545; font-weight: bold; }
+        .status-em-dia { color: #198754; font-weight: bold; }
+        .status-alerta { color: #fd7e14; font-weight: bold; }
     </style>
 </head>
 <body>
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-6 text-center">
+        <div class="col-md-8 text-center">
             <h2 class="brand-cda">SEMMA DIGITAL</h2>
             <p class="text-muted">Conceição do Araguaia - PA</p>
-            <div class="card shadow card-calc text-start">
+            
+            <div class="card card-custom text-start mb-4">
                 <div class="card-body p-4">
-                    <h5 class="card-title mb-4 fw-bold">Calculadora de Vencimentos</h5>
-                    <div class="mb-3">
-                        <label class="form-label">Data de Emissão:</label>
-                        <input type="date" id="dataEmissao" class="form-control">
+                    <h5 class="card-title mb-4 fw-bold"><i class="bi bi-search"></i> Consultar Licenças por CNPJ</h5>
+                    <div class="input-group mb-3">
+                        <input type="text" id="cnpjBusca" class="form-control form-control-lg" placeholder="Digite apenas números (Ex: 12345678000199)">
+                        <button onclick="consultarCNPJ()" class="btn btn-success btn-lg">Consultar</button>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Tipo de Licença:</label>
-                        <select id="tipoLicenca" class="form-select">
-                            <option value="1">Licença Prévia (LP) - 1 ano</option>
-                            <option value="2">Licença de Instalação (LI) - 2 anos</option>
-                            <option value="4">Licença de Operação (LO) - 4 anos</option>
-                        </select>
-                    </div>
-                    <button onclick="calcularPrazo()" class="btn btn-success btn-lg w-100 shadow-sm">Calcular Vencimento</button>
-                    <div id="resultado" class="mt-4 d-none">
-                        <div class="alert alert-success border-0 shadow-sm">
-                            <h4 class="alert-heading fw-bold text-center">Vencimento</h4>
-                            <hr>
-                            <h3 id="dataVencimento" class="text-center fw-bold text-success"></h3>
-                            <p id="alertaRenovacao" class="mb-0 mt-3 small fw-bold text-center"></p>
+                    
+                    <div id="resultadoBusca" class="mt-4 d-none">
+                        <hr>
+                        <h6 class="fw-bold mb-3">Empresa: <span id="nomeEmpresa" class="text-success"></span></h6>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Licença</th>
+                                        <th>Vencimento</th>
+                                        <th>Prazo (Dias)</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabelaCorpo"></tbody>
+                            </table>
                         </div>
                     </div>
+                    <div id="erroBusca" class="alert alert-danger mt-3 d-none">CNPJ não encontrado na base de dados da SEMMA.</div>
                 </div>
             </div>
+
             <footer class="mt-5 text-muted small">
-                Desenvolvido por <strong>Márcio Rodrigues de Oliveira</strong> <br>
-                &copy; 2026 MR Treinamentos
+                Desenvolvido por: <strong>Márcio Rodrigues de Oliveira</strong> <br>
+                <a href="https://www.kmprojetos.eng.br/" target="_blank" style="text-decoration: none !important;">
+                    <h2 class="fw-bold text-success" style="cursor: pointer; text-decoration: none !important;">www.kmprojetos.eng.br</h2>
+                </a>
+                &copy; 2026 KM PROJETOS DE TECNOLOGIA
             </footer>
         </div>
     </div>
 </div>
+
 <script>
-    function calcularPrazo() {
-        const emissao = document.getElementById('dataEmissao').value;
-        const anos = parseInt(document.getElementById('tipoLicenca').value);
-        if (!emissao) { alert("Selecione a data de emissão."); return; }
-        let data = new Date(emissao + 'T00:00:00');
-        data.setFullYear(data.getFullYear() + anos);
-        document.getElementById('dataVencimento').innerText = data.toLocaleDateString('pt-BR');
-        let dataRenovacao = new Date(data);
-        dataRenovacao.setDate(dataRenovacao.getDate() - 120);
-        document.getElementById('alertaRenovacao').innerText = "⚠️ Protocolar renovação até " + dataRenovacao.toLocaleDateString('pt-BR') + " (120 dias antes).";
-        document.getElementById('resultado').classList.remove('d-none');
+    // BASE DE DADOS LOCAL (Você pode adicionar as empresas de CDA aqui)
+    const bancoLicencas = [
+        {
+            cnpj: "12345678000199",
+            empresa: "CONSTRUTORA ARAGUAIA LTDA",
+            licencas: [
+                { tipo: "LO - Operação", vencimento: "2026-05-20" },
+                { tipo: "LI - Instalação", vencimento: "2025-12-10" }
+            ]
+        },
+        {
+            cnpj: "98765432000100",
+            empresa: "POSTO RIO VERDE",
+            licencas: [
+                { tipo: "LO - Operação", vencimento: "2024-01-15" }
+            ]
+        }
+    ];
+
+    function consultarCNPJ() {
+        const cnpjInput = document.getElementById('cnpjBusca').value.replace(/\D/g, '');
+        const resultadoDiv = document.getElementById('resultadoBusca');
+        const erroDiv = document.getElementById('erroBusca');
+        const tabela = document.getElementById('tabelaCorpo');
+        const nomeEmpresa = document.getElementById('nomeEmpresa');
+
+        const empresaEncontrada = bancoLicencas.find(e => e.cnpj === cnpjInput);
+
+        if (empresaEncontrada) {
+            erroDiv.classList.add('d-none');
+            resultadoDiv.classList.remove('d-none');
+            nomeEmpresa.innerText = empresaEncontrada.empresa;
+            tabela.innerHTML = "";
+
+            const hoje = new Date();
+
+            empresaEncontrada.licencas.forEach(lic => {
+                const dataVenc = new Date(lic.vencimento + 'T00:00:00');
+                const diffTime = dataVenc - hoje;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                let statusClass = "status-em-dia";
+                let statusTxt = "Vigente";
+
+                if (diffDays < 0) {
+                    statusClass = "status-vencido";
+                    statusTxt = "Vencida";
+                } else if (diffDays <= 120) {
+                    statusClass = "status-alerta";
+                    statusTxt = "Renovação";
+                }
+
+                tabela.innerHTML += `
+                    <tr>
+                        <td>${lic.tipo}</td>
+                        <td>${dataVenc.toLocaleDateString('pt-BR')}</td>
+                        <td>${diffDays}</td>
+                        <td class="${statusClass}">${statusTxt}</td>
+                    </tr>
+                `;
+            });
+        } else {
+            resultadoDiv.classList.add('d-none');
+            erroDiv.classList.remove('d-none');
+        }
     }
 </script>
 </body>
