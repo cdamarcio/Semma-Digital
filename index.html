@@ -15,13 +15,15 @@
         .badge-status { min-width: 100px; display: inline-block; text-align: center; text-transform: uppercase; font-size: 11px; }
         .info-label { font-weight: bold; color: #198754; text-transform: uppercase; font-size: 0.8rem; }
         .info-value { font-size: 1.1rem; margin-bottom: 10px; display: block; }
+        /* Marcador de campo obrigatório */
+        .obrigatorio::after { content: " *"; color: red; }
     </style>
 </head>
 <body>
 <div class="container pb-5">
     <div class="brand-cda">
         <h2>SEMMA DIGITAL</h2>
-        <p class="text-muted">Cidade do Araguaia - Capital da Tecnologia</p>
+        <p class="text-muted">A Capital da Tecnologia</p>
     </div>
 
     <div class="row justify-content-center">
@@ -34,29 +36,16 @@
                 </div>
 
                 <div id="resultadoBusca" class="d-none">
-                    <div class="bg-light p-4 rounded mb-4 border-start border-4 border-success">
+                    <div class="bg-light p-4 rounded mb-4 border-start border-4 border-success text-start">
                         <h4 class="fw-bold text-success mb-4">DADOS DA EMPRESA</h4>
                         <div class="row">
-                            <div class="col-md-6">
-                                <span class="info-label">Razão Social:</span>
-                                <span class="info-value" id="resNome"></span>
-                            </div>
-                            <div class="col-md-6">
-                                <span class="info-label">CNPJ:</span>
-                                <span class="info-value" id="resCnpj"></span>
-                            </div>
-                            <div class="col-md-6">
-                                <span class="info-label">Celular / WhatsApp:</span>
-                                <span class="info-value" id="resCelular"></span>
-                            </div>
-                            <div class="col-md-6">
-                                <span class="info-label">E-mail:</span>
-                                <span class="info-value" id="resEmail"></span>
-                            </div>
+                            <div class="col-md-6"><span class="info-label">Razão Social:</span><span class="info-value" id="resNome"></span></div>
+                            <div class="col-md-6"><span class="info-label">CNPJ:</span><span class="info-value" id="resCnpj"></span></div>
+                            <div class="col-md-6"><span class="info-label">Celular / WhatsApp:</span><span class="info-value" id="resCelular"></span></div>
+                            <div class="col-md-6"><span class="info-label">E-mail:</span><span class="info-value" id="resEmail"></span></div>
                         </div>
                     </div>
-
-                    <h5 class="fw-bold mb-3">HISTÓRICO DE LICENÇAS</h5>
+                    <h5 class="fw-bold mb-3 text-start">HISTÓRICO DE LICENÇAS</h5>
                     <div class="table-responsive">
                         <table class="table align-middle">
                             <thead class="table-dark">
@@ -72,17 +61,17 @@
 
     <hr class="my-5">
 
-    <div class="row justify-content-center">
+    <div class="row justify-content-center text-start">
         <div class="col-md-9">
             <div class="card card-custom p-4 bg-white">
                 <h4 class="fw-bold mb-4 text-danger text-center">PAINEL DO ADMINISTRADOR</h4>
                 <div class="row">
-                    <div class="col-md-6 mb-3"><label class="form-label fw-bold small">CNPJ:</label><input type="text" id="cadCnpj" class="form-control"></div>
-                    <div class="col-md-6 mb-3"><label class="form-label fw-bold small">Nome da Empresa:</label><input type="text" id="cadNome" class="form-control text-uppercase"></div>
-                    <div class="col-md-6 mb-3"><label class="form-label fw-bold small">Celular/WhatsApp:</label><input type="text" id="cadCelular" class="form-control"></div>
-                    <div class="col-md-6 mb-3"><label class="form-label fw-bold small">E-mail de Contato:</label><input type="email" id="cadEmail" class="form-control"></div>
-                    <div class="col-md-6 mb-3"><label class="form-label fw-bold small">Tipo de Licença:</label><input type="text" id="licNome" class="form-control" placeholder="Ex: LO - Operação"></div>
-                    <div class="col-md-6 mb-3"><label class="form-label fw-bold small">Data de Vencimento:</label><input type="date" id="licData" class="form-control"></div>
+                    <div class="col-md-6 mb-3"><label class="form-label fw-bold small obrigatorio">CNPJ:</label><input type="text" id="cadCnpj" class="form-control"></div>
+                    <div class="col-md-6 mb-3"><label class="form-label fw-bold small obrigatorio">Nome da Empresa:</label><input type="text" id="cadNome" class="form-control text-uppercase"></div>
+                    <div class="col-md-6 mb-3"><label class="form-label fw-bold small obrigatorio">Celular/WhatsApp:</label><input type="text" id="cadCelular" class="form-control"></div>
+                    <div class="col-md-6 mb-3"><label class="form-label fw-bold small obrigatorio">E-mail de Contato:</label><input type="email" id="cadEmail" class="form-control"></div>
+                    <div class="col-md-6 mb-3"><label class="form-label fw-bold small obrigatorio">Tipo de Licença:</label><input type="text" id="licNome" class="form-control" placeholder="Ex: LO - Operação"></div>
+                    <div class="col-md-6 mb-3"><label class="form-label fw-bold small obrigatorio">Data de Vencimento:</label><input type="date" id="licData" class="form-control"></div>
                 </div>
                 <button onclick="salvar()" class="btn btn-primary btn-lg fw-bold w-100 mt-2">SALVAR</button>
             </div>
@@ -90,11 +79,10 @@
     </div>
 
     <footer class="mt-5 text-center text-muted small">
-        
         <a href="https://www.kmprojetos.eng.br/" target="_blank" style="text-decoration: none !important;">
             <h2 class="fw-bold text-success" style="cursor: pointer; text-decoration: none !important;">www.kmprojetos.eng.br</h2>
         </a>
-Desenvolvido por: <strong>Márcio Rodrigues de Oliveira</strong> <br>
+        Desenvolvido por: <strong>Márcio Rodrigues de Oliveira</strong> <br>
         &copy; 2026 KM Engenharia & Tecnologia
     </footer>
 </div>
@@ -103,26 +91,40 @@ Desenvolvido por: <strong>Márcio Rodrigues de Oliveira</strong> <br>
     let bancoLicencas = JSON.parse(localStorage.getItem('bancoSemma')) || [];
 
     function salvar() {
-        const cnpj = document.getElementById('cadCnpj').value.replace(/\D/g, '');
-        const nome = document.getElementById('cadNome').value.toUpperCase();
-        const cel = document.getElementById('cadCelular').value;
-        const mail = document.getElementById('cadEmail').value;
-        const lNome = document.getElementById('licNome').value;
-        const lData = document.getElementById('licData').value;
+        const dados = {
+            cnpj: document.getElementById('cadCnpj').value.replace(/\D/g, ''),
+            nome: document.getElementById('cadNome').value.trim().toUpperCase(),
+            cel: document.getElementById('cadCelular').value.trim(),
+            mail: document.getElementById('cadEmail').value.trim(),
+            lNome: document.getElementById('licNome').value.trim(),
+            lData: document.getElementById('licData').value
+        };
 
-        if(!cnpj || !nome || !lData) return alert("Erro: Preencha CNPJ, Nome e Data!");
+        // VALIDAÇÃO RIGOROSA
+        if(!dados.cnpj || !dados.nome || !dados.cel || !dados.mail || !dados.lNome || !dados.lData) {
+            return alert("⚠️ ATENÇÃO: Todos os campos são obrigatórios para realizar o cadastro!");
+        }
 
-        let empExistente = bancoLicencas.find(e => e.cnpj === cnpj);
+        let empExistente = bancoLicencas.find(e => e.cnpj === dados.cnpj);
         if(empExistente) {
-            empExistente.licencas.push({ tipo: lNome, vencimento: lData });
-            if(cel) empExistente.celular = cel;
-            if(mail) empExistente.email = mail;
+            empExistente.licencas.push({ tipo: dados.lNome, vencimento: dados.lData });
+            empExistente.empresa = dados.nome; // Atualiza caso mude o nome
+            empExistente.celular = dados.cel;
+            empExistente.email = dados.mail;
         } else {
-            bancoLicencas.push({ cnpj, empresa: nome, celular: cel, email: mail, licencas: [{ tipo: lNome, vencimento: lData }] });
+            bancoLicencas.push({ 
+                cnpj: dados.cnpj, 
+                empresa: dados.nome, 
+                celular: dados.cel, 
+                email: dados.mail, 
+                licencas: [{ tipo: dados.lNome, vencimento: dados.lData }] 
+            });
         }
 
         localStorage.setItem('bancoSemma', JSON.stringify(bancoLicencas));
-        alert("Dados salvos com sucesso!");
+        alert("✅ Dados salvos com sucesso!");
+        
+        // Limpa apenas campos de licença para facilitar cadastros múltiplos
         document.getElementById('licNome').value = "";
         document.getElementById('licData').value = "";
     }
@@ -136,8 +138,8 @@ Desenvolvido por: <strong>Márcio Rodrigues de Oliveira</strong> <br>
             document.getElementById('resultadoBusca').classList.remove('d-none');
             document.getElementById('resNome').innerText = empresa.empresa;
             document.getElementById('resCnpj').innerText = empresa.cnpj;
-            document.getElementById('resCelular').innerText = empresa.celular || 'Não informado';
-            document.getElementById('resEmail').innerText = empresa.email || 'Não informado';
+            document.getElementById('resCelular').innerText = empresa.celular;
+            document.getElementById('resEmail').innerText = empresa.email;
             
             resTabela.innerHTML = "";
             const hoje = new Date();
@@ -151,7 +153,7 @@ Desenvolvido por: <strong>Márcio Rodrigues de Oliveira</strong> <br>
                 
                 resTabela.innerHTML += `<tr><td class="fw-bold">${lic.tipo}</td><td>${dv.toLocaleDateString('pt-BR')}</td><td>${diff}d</td><td class="text-center"><span class="badge-status ${cor}">${txt}</span></td></tr>`;
             });
-        } else { alert("CNPJ não encontrado!"); }
+        } else { alert("❌ CNPJ não encontrado!"); }
     }
 </script>
 </body>
