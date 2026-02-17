@@ -52,7 +52,9 @@ O código foi desenvolvido seguindo princípios de **Engenharia de Software**, g
 
 ## Desenvolvedor e Responsável Técnico
 
-**Márcio Rodrigues de Oliveira** *Engenheiro Civil e Analista de Sistemas* **KM Engenharia & Tecnologia**
+**Márcio Rodrigues de Oliveira**
+
+**Engenheiro Civil e Analista de Sistemas**
 
 ---
 
