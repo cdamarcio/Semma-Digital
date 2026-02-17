@@ -13,30 +13,54 @@
         .status-renovacao { background-color: #fd7e14 !important; color: white !important; padding: 8px; border-radius: 5px; font-weight: bold; }
         .status-vencido { background-color: #dc3545 !important; color: white !important; padding: 8px; border-radius: 5px; font-weight: bold; }
         .badge-status { min-width: 100px; display: inline-block; text-align: center; text-transform: uppercase; font-size: 11px; }
+        .info-label { font-weight: bold; color: #198754; text-transform: uppercase; font-size: 0.8rem; }
+        .info-value { font-size: 1.1rem; margin-bottom: 10px; display: block; }
     </style>
 </head>
 <body>
 <div class="container pb-5">
     <div class="brand-cda">
         <h2>SEMMA DIGITAL</h2>
-        <p class="text-muted">Conceição do Araguaia - PA</p>
+        <p class="text-muted">Cidade do Araguaia - Capital da Tecnologia</p>
     </div>
 
     <div class="row justify-content-center">
         <div class="col-md-9">
-            <div class="card card-custom p-4 text-center">
-                <h4 class="fw-bold mb-3">CONSULTAR LICENÇAS</h4>
-                <div class="input-group mb-3">
+            <div class="card card-custom p-4">
+                <h4 class="fw-bold mb-3 text-center">CONSULTAR LICENÇAS</h4>
+                <div class="input-group mb-4">
                     <input type="text" id="cnpjBusca" class="form-control form-control-lg" placeholder="Digite o CNPJ">
                     <button onclick="consultar()" class="btn btn-success btn-lg px-4">BUSCAR</button>
                 </div>
-                <div id="resultadoBusca" class="mt-3 d-none text-start">
-                    <h5 class="fw-bold text-success mb-1" id="resNome"></h5>
-                    <p class="mb-3 small text-muted" id="resContatos"></p>
+
+                <div id="resultadoBusca" class="d-none">
+                    <div class="bg-light p-4 rounded mb-4 border-start border-4 border-success">
+                        <h4 class="fw-bold text-success mb-4">DADOS DA EMPRESA</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <span class="info-label">Razão Social:</span>
+                                <span class="info-value" id="resNome"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="info-label">CNPJ:</span>
+                                <span class="info-value" id="resCnpj"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="info-label">Celular / WhatsApp:</span>
+                                <span class="info-value" id="resCelular"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="info-label">E-mail:</span>
+                                <span class="info-value" id="resEmail"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold mb-3">HISTÓRICO DE LICENÇAS</h5>
                     <div class="table-responsive">
-                        <table class="table align-middle mt-2">
+                        <table class="table align-middle">
                             <thead class="table-dark">
-                                <tr><th>Licença</th><th>Vencimento</th><th>Dias</th><th class="text-center">Status</th></tr>
+                                <tr><th>Licença</th><th>Vencimento</th><th>Prazo</th><th class="text-center">Status</th></tr>
                             </thead>
                             <tbody id="resTabela"></tbody>
                         </table>
@@ -66,16 +90,16 @@
     </div>
 
     <footer class="mt-5 text-center text-muted small">
-        Desenvolvido por: <strong>Márcio Rodrigues de Oliveira</strong> <br>
+        
         <a href="https://www.kmprojetos.eng.br/" target="_blank" style="text-decoration: none !important;">
             <h2 class="fw-bold text-success" style="cursor: pointer; text-decoration: none !important;">www.kmprojetos.eng.br</h2>
         </a>
-        &copy; 2026 KM PROJETOS DE TECNOLOGIA
+Desenvolvido por: <strong>Márcio Rodrigues de Oliveira</strong> <br>
+        &copy; 2026 KM Engenharia & Tecnologia
     </footer>
 </div>
 
 <script>
-    // Carrega dados salvos ou inicia vazio
     let bancoLicencas = JSON.parse(localStorage.getItem('bancoSemma')) || [];
 
     function salvar() {
@@ -91,16 +115,14 @@
         let empExistente = bancoLicencas.find(e => e.cnpj === cnpj);
         if(empExistente) {
             empExistente.licencas.push({ tipo: lNome, vencimento: lData });
-            empExistente.celular = cel || empExistente.celular;
-            empExistente.email = mail || empExistente.email;
+            if(cel) empExistente.celular = cel;
+            if(mail) empExistente.email = mail;
         } else {
             bancoLicencas.push({ cnpj, empresa: nome, celular: cel, email: mail, licencas: [{ tipo: lNome, vencimento: lData }] });
         }
 
         localStorage.setItem('bancoSemma', JSON.stringify(bancoLicencas));
         alert("Dados salvos com sucesso!");
-        
-        // Limpa campos de licença para novo cadastro
         document.getElementById('licNome').value = "";
         document.getElementById('licData').value = "";
     }
@@ -113,7 +135,10 @@
         if(empresa) {
             document.getElementById('resultadoBusca').classList.remove('d-none');
             document.getElementById('resNome').innerText = empresa.empresa;
-            document.getElementById('resContatos').innerHTML = `<strong>Cel:</strong> ${empresa.celular || 'N/A'} | <strong>E-mail:</strong> ${empresa.email || 'N/A'}`;
+            document.getElementById('resCnpj').innerText = empresa.cnpj;
+            document.getElementById('resCelular').innerText = empresa.celular || 'Não informado';
+            document.getElementById('resEmail').innerText = empresa.email || 'Não informado';
+            
             resTabela.innerHTML = "";
             const hoje = new Date();
             hoje.setHours(0,0,0,0);
