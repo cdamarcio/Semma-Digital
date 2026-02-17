@@ -13,6 +13,7 @@
         .status-vigente { background-color: #198754 !important; color: white !important; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 11px; }
         .status-renovacao { background-color: #fd7e14 !important; color: white !important; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 11px; }
         .status-vencido { background-color: #dc3545 !important; color: white !important; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 11px; }
+        .badge-status { min-width: 100px; display: inline-block; text-align: center; text-transform: uppercase; font-size: 11px; }
         .obrigatorio::after { content: " *"; color: red; }
         .stat-card { border-radius: 10px; border: none; color: white; padding: 15px; }
         .bg-total { background: linear-gradient(45deg, #2c3e50, #4ca1af); }
@@ -60,7 +61,7 @@
     <div class="row justify-content-center mb-4">
         <div class="col-md-3"><div class="card stat-card bg-total mb-2 text-center"><div>Empresas</div><div class="h3 fw-bold" id="statTotalEmpresas">0</div></div></div>
         <div class="col-md-3"><div class="card stat-card bg-vencido mb-2 text-center"><div>Vencidas</div><div class="h3 fw-bold" id="statVencidas">0</div></div></div>
-        <div class="col-md-3"><div class="card stat-card bg-alerta mb-2 text-center"><div>Em Renovação</div><div class="h3 fw-bold" id="statAlerta">0</div></div></div>
+        <div class="col-md-3"><div class="card stat-card bg-alerta mb-2 text-center"><div>Renovação (60d)</div><div class="h3 fw-bold" id="statAlerta">0</div></div></div>
     </div>
 
     <div class="row justify-content-center painel-admin">
@@ -75,16 +76,16 @@
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row text-start">
                     <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">CNPJ:</label><input type="text" id="cadCnpj" class="form-control"></div>
                     <div class="col-md-8 mb-3"><label class="small fw-bold obrigatorio">Empresa:</label><input type="text" id="cadNome" class="form-control text-uppercase"></div>
-                    <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">WhatsApp (com DDD):</label><input type="text" id="cadCelular" class="form-control" placeholder="94991234567"></div>
+                    <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">WhatsApp:</label><input type="text" id="cadCelular" class="form-control" placeholder="94991234567"></div>
                     <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">E-mail:</label><input type="email" id="cadEmail" class="form-control"></div>
                     <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">Licença:</label><input type="text" id="licNome" class="form-control"></div>
                     <div class="col-md-4 mb-3"><label class="small fw-bold obrigatorio">Vencimento:</label><input type="date" id="licData" class="form-control"></div>
                     <div class="col-md-8 mb-3"><label class="small fw-bold">Observações Técnicas:</label><input type="text" id="cadObs" class="form-control"></div>
                 </div>
-                <button onclick="salvar()" class="btn btn-primary btn-lg fw-bold w-100">SALVAR NO SISTEMA</button>
+                <button onclick="salvar()" class="btn btn-primary btn-lg fw-bold w-100">SALVAR REGISTRO</button>
 
                 <h6 class="fw-bold text-muted border-bottom mt-4 pb-2">Registros Cadastrados</h6>
                 <div class="table-responsive">
@@ -111,7 +112,7 @@
             emp.licencas.forEach((lic, licIdx) => {
                 const dv = new Date(lic.vencimento + 'T00:00:00');
                 const diff = Math.floor((dv - hoje) / 86400000);
-                if(diff < 0) totalVencidas++; else if(diff <= 120) totalAlerta++;
+                if(diff < 0) totalVencidas++; else if(diff <= 60) totalAlerta++;
 
                 corpoGerenciar.innerHTML += `<tr><td>${emp.cnpj}</td><td>${emp.empresa}</td><td>${lic.tipo}</td><td><button onclick="excluir(${empIdx}, ${licIdx})" class="btn btn-danger btn-sm">X</button></td></tr>`;
             });
@@ -120,6 +121,45 @@
         document.getElementById('statTotalEmpresas').innerText = bancoLicencas.length;
         document.getElementById('statVencidas').innerText = totalVencidas;
         document.getElementById('statAlerta').innerText = totalAlerta;
+    }
+
+    function zap(emp, lic, data, cel) {
+        let fCel = cel.startsWith('55') ? cel : '55' + cel;
+        const msg = encodeURIComponent(`Olá, ${emp}. Somos da SEMMA-CDA. A licença ${lic} vence em ${data}. Favor regularizar.`);
+        window.open(`https://api.whatsapp.com/send?phone=${fCel}&text=${msg}`, '_blank');
+    }
+
+    function consultar() {
+        const c = document.getElementById('cnpjBusca').value.replace(/\D/g, '');
+        const e = bancoLicencas.find(x => x.cnpj === c);
+        const t = document.getElementById('resTabela');
+        if(!e) return alert("CNPJ não encontrado!");
+
+        document.getElementById('resultadoBusca').classList.remove('d-none');
+        document.getElementById('resNome').innerText = e.empresa;
+        document.getElementById('resContatos').innerText = `WhatsApp: ${e.celular} | E-mail: ${e.email}`;
+        
+        const divObs = document.getElementById('resObservacoes');
+        if(e.observacoes) { divObs.innerText = "NOTAS: " + e.observacoes; divObs.classList.remove('d-none'); }
+        else divObs.classList.add('d-none');
+
+        t.innerHTML = "";
+        const hoje = new Date(); hoje.setHours(0,0,0,0);
+        e.licencas.forEach(l => {
+            const dv = new Date(l.vencimento + 'T00:00:00');
+            const diff = Math.floor((dv - hoje) / 86400000);
+            let cor = diff < 0 ? "status-vencido" : (diff <= 60 ? "status-renovacao" : "status-vigente");
+            let txt = diff < 0 ? "VENCIDO" : (diff <= 60 ? "RENOVAÇÃO" : "VIGENTE");
+            
+            t.innerHTML += `<tr>
+                <td>${l.tipo}</td>
+                <td>${dv.toLocaleDateString('pt-BR')}</td>
+                <td><span class="${cor}">${txt}</span></td>
+                <td class="text-center">
+                    <button onclick="zap('${e.empresa}','${l.tipo}','${dv.toLocaleDateString('pt-BR')}','${e.celular}')" class="btn btn-success btn-sm">Notificar</button>
+                </td>
+            </tr>`;
+        });
     }
 
     function salvar() {
@@ -144,45 +184,6 @@
         localStorage.setItem('bancoSemma', JSON.stringify(bancoLicencas));
         atualizarInterface();
         alert("✅ Salvo!");
-    }
-
-    function consultar() {
-        const c = document.getElementById('cnpjBusca').value.replace(/\D/g, '');
-        const e = bancoLicencas.find(x => x.cnpj === c);
-        const t = document.getElementById('resTabela');
-        if(!e) return alert("CNPJ não encontrado!");
-
-        document.getElementById('resultadoBusca').classList.remove('d-none');
-        document.getElementById('resNome').innerText = e.empresa;
-        document.getElementById('resContatos').innerText = `WhatsApp: ${e.celular} | E-mail: ${e.email}`;
-        
-        const divObs = document.getElementById('resObservacoes');
-        if(e.observacoes) { divObs.innerText = "NOTAS: " + e.observacoes; divObs.classList.remove('d-none'); }
-        else divObs.classList.add('d-none');
-
-        t.innerHTML = "";
-        const hoje = new Date(); hoje.setHours(0,0,0,0);
-        e.licencas.forEach(l => {
-            const dv = new Date(l.vencimento + 'T00:00:00');
-            const diff = Math.floor((dv - hoje) / 86400000);
-            let cor = diff < 0 ? "status-vencido" : (diff <= 120 ? "status-renovacao" : "status-vigente");
-            let txt = diff < 0 ? "VENCIDO" : (diff <= 120 ? "RENOVAÇÃO" : "VIGENTE");
-            
-            t.innerHTML += `<tr>
-                <td>${l.tipo}</td>
-                <td>${dv.toLocaleDateString('pt-BR')}</td>
-                <td><span class="${cor}">${txt}</span></td>
-                <td class="text-center">
-                    <button onclick="zap('${e.empresa}','${l.tipo}','${dv.toLocaleDateString('pt-BR')}','${e.celular}')" class="btn btn-success btn-sm">Notificar</button>
-                </td>
-            </tr>`;
-        });
-    }
-
-    function zap(emp, lic, data, cel) {
-        let fCel = cel.startsWith('55') ? cel : '55' + cel;
-        const msg = encodeURIComponent(`Olá, ${emp}. Somos da SEMMA-CDA. A licença ${lic} vence em ${data}. Favor regularizar.`);
-        window.open(`https://api.whatsapp.com/send?phone=${fCel}&text=${msg}`, '_blank');
     }
 
     function excluir(eI, lI) {
