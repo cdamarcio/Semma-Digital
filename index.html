@@ -5,15 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Semma Digital - Consulta por CNPJ</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
         body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; }
         .card-custom { border-top: 6px solid #198754; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .brand-cda { color: #198754; font-weight: bold; }
-        /* Classes de Status Colorido */
-        .bg-vigente { background-color: #198754 !important; color: white !important; } /* Verde */
-        .bg-renovacao { background-color: #fd7e14 !important; color: white !important; } /* Laranja */
-        .bg-vencido { background-color: #dc3545 !important; color: white !important; } /* Vermelho */
-        .badge { padding: 8px 12px; border-radius: 6px; font-size: 0.9em; }
+        /* Cores de Status Solicitadas */
+        .status-vigente { background-color: #198754 !important; color: white !important; } /* Verde */
+        .status-renovacao { background-color: #fd7e14 !important; color: white !important; } /* Laranja */
+        .status-vencido { background-color: #dc3545 !important; color: white !important; } /* Vermelho */
+        .badge-status { padding: 10px; border-radius: 5px; display: inline-block; width: 120px; text-align: center; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -27,7 +28,7 @@
                 <div class="card-body p-4">
                     <h5 class="card-title mb-4 fw-bold">Consultar Licenças por CNPJ</h5>
                     <div class="input-group mb-3">
-                        <input type="text" id="cnpjBusca" class="form-control form-control-lg" placeholder="Digite o CNPJ (apenas números)">
+                        <input type="text" id="cnpjBusca" class="form-control form-control-lg" placeholder="Digite o CNPJ (somente números)">
                         <button onclick="consultarCNPJ()" class="btn btn-success btn-lg">Consultar</button>
                     </div>
                     
@@ -39,7 +40,7 @@
                                     <tr>
                                         <th>Licença</th>
                                         <th>Vencimento</th>
-                                        <th>Prazo (Dias)</th>
+                                        <th>Prazo</th>
                                         <th class="text-center">Status</th>
                                     </tr>
                                 </thead>
@@ -54,7 +55,7 @@
             <footer class="mt-5 text-muted small">
                 Desenvolvido por: <strong>Márcio Rodrigues de Oliveira</strong> <br>
                 <a href="https://www.kmprojetos.eng.br/" target="_blank" style="text-decoration: none !important;">
-                    <h2 class="fw-bold text-success" style="cursor: pointer; text-decoration: none !important;">www.kmprojetos.eng.br</h2>
+                    <h2 class="fw-bold text-success" style="cursor: pointer; text-decoration: none !important; border: none !important;">www.kmprojetos.eng.br</h2>
                 </a>
                 &copy; 2026 KM PROJETOS DE TECNOLOGIA
             </footer>
@@ -68,9 +69,9 @@
             cnpj: "12345678000199",
             empresa: "CONSTRUTORA ARAGUAIA LTDA",
             licencas: [
-                { tipo: "LO - Operação", vencimento: "2026-08-20" }, // Vigente (Verde)
-                { tipo: "LI - Instalação", vencimento: "2026-04-10" }, // Renovação (Laranja)
-                { tipo: "LP - Prévia", vencimento: "2023-12-10" }     // Vencido (Vermelho)
+                { tipo: "LO - Operação", vencimento: "2027-01-01" }, // Verde (Vigente)
+                { tipo: "LI - Instalação", vencimento: "2026-05-15" }, // Laranja (Renovação - menos de 120 dias)
+                { tipo: "LP - Prévia", vencimento: "2025-01-01" }     // Vermelho (Vencido)
             ]
         }
     ];
@@ -96,19 +97,19 @@
             empresaEncontrada.licencas.forEach(lic => {
                 const dataVenc = new Date(lic.vencimento + 'T00:00:00');
                 const diffTime = dataVenc - hoje;
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
                 
                 let statusClass = "";
                 let statusTxt = "";
 
                 if (diffDays < 0) {
-                    statusClass = "bg-vencido";
+                    statusClass = "status-vencido";
                     statusTxt = "Vencido";
                 } else if (diffDays <= 120) {
-                    statusClass = "bg-renovacao";
+                    statusClass = "status-renovacao";
                     statusTxt = "Renovação";
                 } else {
-                    statusClass = "bg-vigente";
+                    statusClass = "status-vigente";
                     statusTxt = "Vigente";
                 }
 
@@ -117,7 +118,7 @@
                         <td class="fw-bold">${lic.tipo}</td>
                         <td>${dataVenc.toLocaleDateString('pt-BR')}</td>
                         <td>${diffDays} dias</td>
-                        <td class="text-center"><span class="badge ${statusClass}">${statusTxt}</span></td>
+                        <td class="text-center"><span class="badge-status ${statusClass}">${statusTxt}</span></td>
                     </tr>
                 `;
             });
